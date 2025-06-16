@@ -1,57 +1,43 @@
 use macroquad::prelude::*;
-use macroquad::{color::WHITE, shapes::draw_rectangle};
-use std::vec;
 
 const SQUARE_SIZE: f32 = 30.0;
 const SPEED: f32 = 1.0;
-const FRAME_DELAY: f64 = 0.3;
+const DELAY: f64 = 0.3;
 
 struct Square {
-    pub x: f32,
-    pub y: f32,
+    x: f32,
+    y: f32,
 }
 
 impl Square {
     pub fn new(x: f32, y: f32) -> Square {
         Square { x: x, y: y }
     }
-
-    pub fn draw(&self) {
-        draw_rectangle(
-            self.x * SQUARE_SIZE,
-            self.y * SQUARE_SIZE,
-            SQUARE_SIZE,
-            SQUARE_SIZE,
-            WHITE,
-        );
-    }
 }
 
-struct Snake {
+struct Game {
     pub dir_x: f32,
     pub dir_y: f32,
-    pub squares: Vec<Square>,
+    pub food: Square,
+    pub snake: Vec<Square>,
 }
 
-impl Snake {
-    pub fn new() -> Snake {
+impl Game {
+    pub fn new() -> Game {
         let first = Square::new(0.0, 0.0);
-        let vector = vec![first];
-        Snake {
-            squares: vector,
-            dir_x: 0.0,
-            dir_y: SPEED,
+
+        Game {
+            snake: vec![first],
+            dir_x: 1.0,
+            dir_y: 0.0,
+            food: Square::new(5.0, 5.0)
         }
     }
 
-    pub fn get_head(&self) -> &Square {
-        return &self.squares[0];
-    }
-
-    pub fn draw(&self) {
-        for square in &self.squares {
-            square.draw();
-        }
+    pub fn mov(&mut self) {
+        self.log();
+        self.move_snake();
+        self.eat();
     }
 
     pub fn right(&mut self) {
@@ -64,116 +50,92 @@ impl Snake {
         self.dir_y = 0.0;
     }
 
+    pub fn up(&mut self) {
+        self.dir_x = 0.0;
+        self.dir_y = SPEED*-1.0;
+    }
+
     pub fn down(&mut self) {
         self.dir_x = 0.0;
         self.dir_y = SPEED;
     }
 
-    pub fn up(&mut self) {
-        self.dir_x = 0.0;
-        self.dir_y = SPEED * -1.0;
+    pub fn draw(&mut self) {
+        self.draw_snake();
+        self.draw_food();
     }
 
-    pub fn mov(&mut self) {
-        let mut i: usize = self.squares.len() - 1;
+    pub fn draw_food(&self) {
+        self.draw_square(self.food.x, self.food.y);
+    }
+
+    pub fn move_snake(&mut self) {
+        let mut i = self.snake.len() -1;
 
         while i >= 1 {
-            self.squares[i].x = self.squares[i - 1].x;
-            self.squares[i].y = self.squares[i - 1].y;
+            self.snake[i].x = self.snake[i-1].x;
+            self.snake[i].y = self.snake[i-1].y;
             i -= 1;
         }
-
-        self.squares[0].x += self.dir_x;
-        self.squares[0].y += self.dir_y;
+        self.snake[0].x += self.dir_x;
+        self.snake[0].y += self.dir_y;
     }
 
-    pub fn insert(&mut self, x: f32, y: f32) {
-        self.squares.insert(0, Square::new(x, y));
-    }
-}
-
-struct Game {
-    pub snake: Snake,
-    pub food: Square,
-}
-
-impl Game {
-    pub fn new() -> Game {
-        Game {
-            snake: Snake::new(),
-            food: Square::new(10.0, 10.0),
+    pub fn draw_snake(&mut self) {
+        for s in &self.snake {
+            self.draw_square(s.x, s.y);
         }
     }
 
-    pub fn right(&mut self) {
-        self.snake.right();
+    pub fn draw_square(&self, x: f32, y: f32) {
+        draw_rectangle(
+            x * SQUARE_SIZE,
+            y * SQUARE_SIZE,
+            SQUARE_SIZE,
+            SQUARE_SIZE,
+            WHITE,
+        );
     }
 
-    pub fn left(&mut self) {
-        self.snake.left();
-    }
-
-    pub fn down(&mut self) {
-        self.snake.down();
-    }
-
-    pub fn up(&mut self) {
-        self.snake.up();
-    }
-
-    pub fn draw(&mut self) {
-        self.snake.draw();
-        self.food.draw();
-    }
-
-    pub fn mov(&mut self) {
-        self.log();
-        self.eat();
-        self.snake.mov()
-    }
-
-    fn log(&self) {
-        let first = &self.snake.squares[0];
-        let food = &self.food;
-
-        println!("Head ({},{})", first.x, first.y);
-        println!("Food ({},{})", food.x, food.y);
+    pub fn log(&self) {
+        let head = &self.snake[0];
+        println!("HEAD ({}, {})", head.x, head.y);
     }
 
     pub fn eat(&mut self) {
-        let head = self.snake.get_head();
+        let head = &self.snake[0];
         let next_head = Square {
-            x: head.x + self.snake.dir_x,
-            y: head.y + self.snake.dir_y,
+            x:  head.x+self.dir_x,
+            y:  head.y+self.dir_y
         };
 
         let food = &self.food;
-        let eated = food.x == next_head.x && food.y == next_head.y;
+
+        let eated = next_head.x == food.x && next_head.y == food.y;
 
         if !eated {
             return;
         }
+        
+        println!("Eaten!");
+        self.snake.insert(0, Square {x: food.x, y: food.y});
 
-        self.snake.insert(food.x, food.y);
+        let fx = rand::gen_range(1, 20) as f32;
+        let fy = rand::gen_range(1, 20) as f32;
 
-        let x: f32 = rand::gen_range(1, 20) as f32; 
-        let y: f32 = rand::gen_range(1, 20) as f32;
-        self.food = Square::new(x, y);
+        self.food.x = fx;
+        self.food.y = fy;
     }
 }
 
 #[macroquad::main("MyGame")]
 async fn main() {
     let mut game = Game::new();
-    let mut timer_start = get_time();
+    let mut start_timer = get_time();
     loop {
+
         clear_background(BLACK);
         game.draw();
-
-        if get_time() - timer_start >= FRAME_DELAY {
-            game.mov();
-            timer_start = get_time();
-        }
 
         if is_key_released(KeyCode::Right) {
             game.right();
@@ -191,6 +153,10 @@ async fn main() {
             game.down();
         }
 
-        next_frame().await;
+        if get_time() - start_timer > DELAY {
+            start_timer = get_time();
+            game.mov();
+        }
+        next_frame().await
     }
 }
