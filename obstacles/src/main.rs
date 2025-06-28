@@ -3,6 +3,7 @@ use std::fs::{self};
 use macroquad::prelude::*;
 const SQUARE_SIZE: f32 = 10.0;
 const DELAY: f64 = 0.3;
+const SPEED: f32 = 1.0;
 struct Position {
     x: f32,
     y: f32,
@@ -25,66 +26,108 @@ impl Game {
         Game {
             obstacles: Game::init_obstacles(),
             ball: Position::new(5.0, 1.0),
-            ball_direction: Position::new(1.0, -1.0),
+            ball_direction: Position::new(1.0, 1.0),
         }
     }
 
     fn mov(&mut self) {
         self.handle_crash();
-        self.ball.x += self.ball_direction.x;
-        self.ball.y += self.ball_direction.y;
+        self.ball.x += self.ball_direction.x * SPEED;
+        self.ball.y += self.ball_direction.y * SPEED;
     }
 
-    fn get_next_move(&self) -> Position {
-        Position {
-            x: self.ball.x + self.ball_direction.x,
-            y: self.ball.y + self.ball_direction.y,
-        }
-    }
-
-    fn get_crash_obstacle(&self, position: &Position) -> Option<Position> {
+    fn is_crash_up(&self) -> bool {
         for obs in &self.obstacles {
-            if obs.x == position.x && position.y == obs.y {
-                return Some(Position {
-                    x: obs.x,
-                    y: obs.y
-                })
+            let dx = obs.x + SQUARE_SIZE / 2.0;
+            let dy = obs.y * SQUARE_SIZE;
+
+            let bx = self.ball.x+ SQUARE_SIZE / 2.0;
+            let by = self.ball.y * SQUARE_SIZE;
+
+            if dx == bx && dy == by {
+                return true;
             }
         }
 
-        None
+        return false;
+    }
+
+
+    fn is_crash_down(&self) -> bool {
+        for obs in &self.obstacles {
+            let bx = obs.x + SQUARE_SIZE / 2.0;
+            let by = obs.y * SQUARE_SIZE;
+
+            let dx = self.ball.x+ SQUARE_SIZE / 2.0;
+            let dy = self.ball.y * SQUARE_SIZE;
+
+            if dx == bx && dy == by {
+                return true;
+            }
+        }
+        return false
+    }
+
+    fn is_crash_right(&self) -> bool {
+        for obs in &self.obstacles {
+            let lox = obs.x * SQUARE_SIZE;
+            let loy = obs.y + SQUARE_SIZE/2.0;
+
+            let rbx = self.ball.x*SQUARE_SIZE+ SQUARE_SIZE ;
+            let rby = self.ball.y+SQUARE_SIZE/2.0;
+
+            if lox == rbx && loy == rby {
+                return true;
+            }
+        }
+        return false
+    }
+
+
+    fn is_crash_left(&self) -> bool {
+        for obs in &self.obstacles {
+            let rbx = obs.x * SQUARE_SIZE;
+            let rby = obs.y + SQUARE_SIZE/2.0;
+
+            let lox = self.ball.x*SQUARE_SIZE+ SQUARE_SIZE;
+            let loy = self.ball.y+SQUARE_SIZE/2.0;
+
+            if lox == rbx && loy == rby {
+                return true;
+            }
+        }
+        return false
     }
 
     fn handle_crash(&mut self) {
-        let next = self.get_next_move();
-        let opt_obs = self.get_crash_obstacle(&next);
-
-        if opt_obs.is_none(){
-            return
+        if self.is_crash_up() {
+            self.changey_direction();
+            return;
         }
-        
-        let obs = opt_obs.unwrap();
-        let cx = self.ball.x;
-        let cy = self.ball.y;
 
-        if next.x == obs.x && cx != obs.x {
+        if self.is_crash_down() {
+            self.changey_direction();
+            return;
+        }
+
+        if self.is_crash_right() {
             self.changex_direction();
             return;
         }
 
-        
-        if next.y == obs.y && cy != obs.y {
-            self.changey_direction();
+
+        if self.is_crash_left() {
+            self.changex_direction();
             return;
         }
     }
 
-    fn changex_direction(&mut self) {
-        self.ball_direction.x = self.ball_direction.x * -1.0;
-    }
-
     fn changey_direction(&mut self) {
         self.ball_direction.y = self.ball_direction.y * -1.0;
+    }
+
+    fn changex_direction(&mut self) {
+        self.ball_direction.x = self.ball_direction.x * -1.0;
     }
 
     fn get_content_file() -> Vec<String> {
@@ -138,17 +181,16 @@ impl Game {
         );
     }
 
-    fn draw_circle(x: f32, y: f32) {
-        draw_circle(x * 10.0, y * 10.0, 5.0, WHITE);
-    }
-
     fn draw_ball(&self) {
-        Game::draw_circle(self.ball.x as f32, self.ball.y as f32);
+        Game::draw_square(self.ball.x as f32, self.ball.y as f32);
     }
 
     fn print(&self) {
-        print!("Ball ({}, {})", self.ball.x, self.ball.y);
-        print!(" Direction ({}, {})", self.ball_direction.x, self.ball_direction.y);
+        println!("Ball ({}, {})", self.ball.x, self.ball.y);
+        println!(
+            " Direction ({}, {})",
+            self.ball_direction.x, self.ball_direction.y
+        );
     }
 }
 
