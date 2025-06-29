@@ -41,7 +41,7 @@ impl Game {
             let dx = obs.x + SQUARE_SIZE / 2.0;
             let dy = obs.y * SQUARE_SIZE;
 
-            let bx = self.ball.x+ SQUARE_SIZE / 2.0;
+            let bx = self.ball.x + SQUARE_SIZE / 2.0;
             let by = self.ball.y * SQUARE_SIZE;
 
             if dx == bx && dy == by {
@@ -52,51 +52,71 @@ impl Game {
         return false;
     }
 
+    fn top_center(position: &Position)-> Position {
+        let x = position.x * SQUARE_SIZE;
+        let y = position.y * SQUARE_SIZE + SQUARE_SIZE / 2.0;
+
+        return Position {x: x, y: y};
+    }
+    fn left_center(position: &Position)-> Position {
+
+        let x = position.x * SQUARE_SIZE;
+        let y = position.y * SQUARE_SIZE + SQUARE_SIZE / 2.0;
+
+        return Position {x: x, y: y};
+    }
+
+
+    fn right_center(position: &Position)-> Position {
+        let x = position.x * SQUARE_SIZE + SQUARE_SIZE;
+        let y = position.y * SQUARE_SIZE + SQUARE_SIZE / 2.0;
+
+        return Position {x: x, y: y};
+    }
 
     fn is_crash_down(&self) -> bool {
         for obs in &self.obstacles {
             let bx = obs.x + SQUARE_SIZE / 2.0;
             let by = obs.y * SQUARE_SIZE;
 
-            let dx = self.ball.x+ SQUARE_SIZE / 2.0;
+            let dx = self.ball.x + SQUARE_SIZE / 2.0;
             let dy = self.ball.y * SQUARE_SIZE;
 
             if dx == bx && dy == by {
                 return true;
             }
         }
-        return false
+        return false;
     }
 
     fn is_crash_right(&self) -> bool {
         for obs in &self.obstacles {
             let lox = obs.x * SQUARE_SIZE;
-            let loy = obs.y + SQUARE_SIZE/2.0;
+            let loy = obs.y + SQUARE_SIZE / 2.0;
 
-            let rbx = self.ball.x*SQUARE_SIZE+ SQUARE_SIZE ;
-            let rby = self.ball.y+SQUARE_SIZE/2.0;
+            let rbx = self.ball.x * SQUARE_SIZE + SQUARE_SIZE;
+            let rby = self.ball.y + SQUARE_SIZE / 2.0;
 
             if lox == rbx && loy == rby {
                 return true;
             }
         }
-        return false
+        return false;
     }
-
 
     fn is_crash_left(&self) -> bool {
         for obs in &self.obstacles {
             let rbx = obs.x * SQUARE_SIZE;
-            let rby = obs.y + SQUARE_SIZE/2.0;
+            let rby = obs.y + SQUARE_SIZE / 2.0;
 
-            let lox = self.ball.x*SQUARE_SIZE+ SQUARE_SIZE;
-            let loy = self.ball.y+SQUARE_SIZE/2.0;
+            let lox = self.ball.x * SQUARE_SIZE + SQUARE_SIZE;
+            let loy = self.ball.y + SQUARE_SIZE / 2.0;
 
             if lox == rbx && loy == rby {
                 return true;
             }
         }
-        return false
+        return false;
     }
 
     fn handle_crash(&mut self) {
@@ -114,7 +134,6 @@ impl Game {
             self.changex_direction();
             return;
         }
-
 
         if self.is_crash_left() {
             self.changex_direction();
