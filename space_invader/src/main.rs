@@ -1,281 +1,261 @@
 use macroquad::{prelude::*, rand::RandomRange};
 
-const SQUARE_SIZE: f32 = 20.0;
-const DELAY: f64 = 0.2;
-const INVADER_EVERY:u16 = 2;
+const SQUARE_SIZE: f32 = 30.0;
+const CREATE_INVADER_EVERY: usize = 3;
+
+const MOVE_EVERY: f64 = 0.3;
 
 struct Position {
     x: f32,
-    y: f32
+    y: f32,
 }
 
 impl Position {
-    pub fn new(x: f32, y:f32) -> Self {
-        return Position {
-            x: x,
-            y: y
-        }
+    pub fn new(x: f32, y: f32) -> Self {
+        return Position { x: x, y: y };
     }
 
-    pub fn add(& mut self, x: f32, y:f32) {
+    pub fn add(&mut self, x: f32, y: f32) {
         self.x = self.x + x;
         self.y = self.y + y;
     }
 }
 
-struct Invader {
-    position: Position,
-    speed: f32
-}
-
-impl  Invader {
-
-    pub fn new() -> Self {
-        Invader{
-            position: Position::new(
-                RandomRange::gen_range(0.0, screen_width()),
-                0.0
-            ),
-            speed: 6.0
-        }
-    }
-
-    pub fn draw(&self) {
-        let x = self.position.x;
-        let y = self.position.y;
-        draw_rectangle(x, y, SQUARE_SIZE , SQUARE_SIZE, RED);
-    }
-
-    pub fn mov(& mut self) {
-        self.position.add(0.0, self.speed);
-    }
-    
-}
-
 struct Bullet {
-    position: Position,
-    speed: f32
+    pos: Position,
 }
 
-impl  Bullet {
-    
-    pub fn new(x: f32, y: f32) -> Self
-    {
-        let pos = Position::new(x, y);
+impl Bullet {
+    fn new(x: f32, y: f32) -> Self {
         Bullet {
-            position : pos,
-            speed: 6.0
+            pos: Position::new(x, y),
         }
     }
 
-    pub fn mov(& mut self) {
-        self.position.add(0.0, -1.0 * self.speed);
+    fn draw(&mut self) {
+        draw_rectangle(
+            self.pos.x,
+            self.pos.y,
+            SQUARE_SIZE * 1.0,
+            SQUARE_SIZE,
+            GREEN,
+        );
     }
 
-    pub fn draw(&self) {
-        let x = self.position.x;
-        let y = self.position.y;
-        draw_rectangle(x, y, SQUARE_SIZE , SQUARE_SIZE, WHITE);
+    fn mov(&mut self) {
+        self.pos.add(0.0, SQUARE_SIZE * -1.0);
     }
-
 }
 
-struct Ship{
-    position: Position
+struct Invader {
+    pos: Position,
+}
+
+impl Invader {
+    fn new() -> Self {
+        let x = RandomRange::gen_range(0.0, screen_width());
+        let y = 0.0;
+
+        Invader {
+            pos: Position::new(x, y),
+        }
+    }
+
+    fn draw(&mut self) {
+        draw_rectangle(self.pos.x, self.pos.y, SQUARE_SIZE * 1.0, SQUARE_SIZE, RED);
+    }
+
+    fn mov(&mut self) {
+        self.pos.add(0.0, SQUARE_SIZE);
+    }
+}
+struct Ship {
+    pos: Position,
 }
 
 impl Ship {
-   
-    pub fn new() -> Self
-    {
-        let x = screen_width() / 2.0; 
-        let y = screen_height() - 1.0;
-        let pos = Position::new(x, y);
+    fn new() -> Self {
         Ship {
-            position : pos
+            pos: Position::new(screen_width() / 2.0, screen_height() / 2.0 + 300.0),
         }
     }
 
-    pub fn draw(&self) {
+    fn draw(&mut self) {
         draw_rectangle(
-            self.position.x, 
-            self.position.y, 
-            SQUARE_SIZE * 3.0, 
-            SQUARE_SIZE * 1.0, 
-            WHITE);
+            self.pos.x,
+            self.pos.y,
+            SQUARE_SIZE * 3.0,
+            SQUARE_SIZE,
+            WHITE,
+        );
     }
 
-    pub fn right(& mut self) {
-       self.position.add(SQUARE_SIZE, 0.0);
+    fn left(&mut self) {
+        self.pos.add(SQUARE_SIZE * -1.0, 0.0);
     }
 
-    pub fn left(& mut self) {
-       self.position.add(SQUARE_SIZE*-1.0, 0.0);
+    fn right(&mut self) {
+        self.pos.add(SQUARE_SIZE * 1.0, 0.0);
     }
 
-    pub fn shot(& mut self) -> Bullet {
-         return Bullet::new(self.position.x, self.position.y);
+    fn shot(&mut self) -> Bullet {
+        let bullet = Bullet::new(self.pos.x, self.pos.y);
+
+        return bullet;
     }
 }
 
 struct Game {
     ship: Ship,
-    bullets: Vec<Bullet>,
     invaders: Vec<Invader>,
-    invader_count: u16
+    bullets: Vec<Bullet>,
+    invaders_count: usize,
 }
 
 impl Game {
-
     pub fn new() -> Self {
-        return Game {
+        Game {
             ship: Ship::new(),
-            bullets: Vec::new(),
             invaders: Vec::new(),
-            invader_count: 0
+            bullets: Vec::new(),
+            invaders_count: 0,
         }
-    }
-
-    pub fn draw(& self) {
-        self.ship.draw();
-        self.draw_bullets();
-        self.draw_invaders();
     }
 
     pub fn mov(&mut self) {
-        self.mov_bullets();
+        self.create_invaders();
         self.mov_invaders();
-        self.create_invader();
+        self.mov_bullets();
         self.handle_crash();
     }
 
-    pub fn mov_bullets(& mut self) {
-        for bullet in & mut self.bullets {
-            bullet.mov();
-        }
-    }
-
-    pub fn mov_invaders(& mut self) {
-        for invader in & mut self.invaders {
+    pub fn mov_invaders(&mut self) {
+        for invader in &mut self.invaders {
             invader.mov();
         }
     }
 
-    pub fn create_invader(& mut self) {
-        if self.invader_count >= INVADER_EVERY {
+    pub fn mov_bullets(&mut self) {
+        for bullet in &mut self.bullets {
+            bullet.mov();
+        }
+    }
+
+    pub fn create_invaders(&mut self) {
+        if self.invaders_count >= CREATE_INVADER_EVERY {
             self.invaders.push(Invader::new());
-            self.invader_count = 0;
+            self.invaders_count = 0;
             return;
         }
 
-        self.invader_count += 1;
+        self.invaders_count += 1;
     }
 
-    pub fn draw_bullets(& self) {
-        for bullet in &self.bullets {
-            bullet.draw();
-        }
-    }
-
-    pub fn draw_invaders(& self) {
-        for invader in &self.invaders {
+    pub fn draw_invaders(&mut self) {
+        for invader in &mut self.invaders {
             invader.draw();
         }
     }
 
-    pub fn right(& mut self) {
+    pub fn draw_bullets(&mut self) {
+        for bullet in &mut self.bullets {
+            bullet.draw();
+        }
+    }
+
+    pub fn draw(&mut self) {
+        self.ship.draw();
+        self.draw_invaders();
+        self.draw_bullets();
+    }
+
+    pub fn left(&mut self) {
+        self.ship.left();
+    }
+
+    pub fn right(&mut self) {
         self.ship.right();
     }
 
-    pub fn left(& mut self) {
-        self.ship.left();
-    }
-    
-    pub fn shot(& mut self) {
-        let bullet = self
-            .ship
-            .shot();
-
+    pub fn shot(&mut self) {
+        let bullet = self.ship.shot();
         self.bullets.push(bullet);
     }
 
-    pub fn handle_crash(& mut self) {
-
+    pub fn handle_crash(&mut self) {
         let mut bullets_remove = vec![false; self.bullets.len()];
         let mut invaders_remove = vec![false; self.invaders.len()];
 
         for (b_index, bullet) in self.bullets.iter().enumerate() {
             for (i_index, invader) in self.invaders.iter().enumerate() {
-                
                 if Game::is_crash(invader, bullet) {
                     bullets_remove[b_index] = true;
                     invaders_remove[i_index] = true;
                 }
             }
         }
-       
-        let mut i: usize = 0;
+
+        let mut i = 0;
+
         self.bullets.retain(|_| {
             let keep = !bullets_remove[i];
             i += 1;
-            keep
+            return keep;
         });
-
 
         i = 0;
         self.invaders.retain(|_| {
             let keep = !invaders_remove[i];
             i += 1;
-            keep
+            return keep;
         });
-
     }
 
     pub fn is_crash(invader: &Invader, bullet: &Bullet) -> bool {
-        let vertical = Game::vertical_crash(invader, bullet); 
+        let vertical = Game::vertical_crash(invader, bullet);
         let horizontal = Game::horizontal_crash(invader, bullet);
 
-        return  vertical && horizontal;
+        return vertical && horizontal;
     }
 
     pub fn vertical_crash(invader: &Invader, bullet: &Bullet) -> bool {
-        let i_left = invader.position.x;
+        let i_bottom = invader.pos.y + SQUARE_SIZE;
+        let b_top = bullet.pos.y;
+
+        return i_bottom > b_top;
+    }
+
+    pub fn horizontal_crash(invader: &Invader, bullet: &Bullet) -> bool {
+        let i_left = invader.pos.x;
         let i_right = i_left + SQUARE_SIZE;
 
-        
-        let b_left = bullet.position.x;
-        let b_right = b_left + SQUARE_SIZE;
+        let b_left = bullet.pos.x;
+        let b_righ = b_left + SQUARE_SIZE;
 
         if i_left == b_left {
             return true;
         }
-        
+
         if i_left < b_left {
             return i_right >= b_left;
         }
 
         if i_left > b_left {
-            return b_right >= i_left;
+            return b_righ >= i_left;
         }
+
         return false;
     }
-
-    pub fn horizontal_crash(invader: &Invader, bullet: &Bullet) -> bool {
-        let invader_bottom = invader.position.y + SQUARE_SIZE;
-        let bullet_top = bullet.position.y;
-
-        return invader_bottom > bullet_top;
-    }
-    
 }
 
-#[macroquad::main("Invaders")] 
+#[macroquad::main("MyGame")]
 async fn main() {
-
     let mut game = Game::new();
     let mut time = get_time();
+
     loop {
         clear_background(BLACK);
+
         game.draw();
 
         if is_key_pressed(KeyCode::Left) {
@@ -290,9 +270,7 @@ async fn main() {
             game.shot();
         }
 
-        let elapsed_time = get_time() - time;
-
-        if elapsed_time >= DELAY {
+        if get_time() - time > MOVE_EVERY {
             game.mov();
             time = get_time();
         }
@@ -300,4 +278,3 @@ async fn main() {
         next_frame().await
     }
 }
-
