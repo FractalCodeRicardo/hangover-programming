@@ -146,6 +146,7 @@ impl Game {
         self.mov_bullets();
         self.mov_invaders();
         self.create_invader();
+        self.handle_crash();
     }
 
     pub fn mov_bullets(& mut self) {
@@ -198,6 +199,73 @@ impl Game {
         self.bullets.push(bullet);
     }
 
+    pub fn handle_crash(& mut self) {
+
+        let mut bullets_remove = vec![false; self.bullets.len()];
+        let mut invaders_remove = vec![false; self.invaders.len()];
+
+        for (b_index, bullet) in self.bullets.iter().enumerate() {
+            for (i_index, invader) in self.invaders.iter().enumerate() {
+                
+                if Game::is_crash(invader, bullet) {
+                    bullets_remove[b_index] = true;
+                    invaders_remove[i_index] = true;
+                }
+            }
+        }
+       
+        let mut i: usize = 0;
+        self.bullets.retain(|_| {
+            let keep = !bullets_remove[i];
+            i += 1;
+            keep
+        });
+
+
+        i = 0;
+        self.invaders.retain(|_| {
+            let keep = !invaders_remove[i];
+            i += 1;
+            keep
+        });
+
+    }
+
+    pub fn is_crash(invader: &Invader, bullet: &Bullet) -> bool {
+        let vertical = Game::vertical_crash(invader, bullet); 
+        let horizontal = Game::horizontal_crash(invader, bullet);
+
+        return  vertical && horizontal;
+    }
+
+    pub fn vertical_crash(invader: &Invader, bullet: &Bullet) -> bool {
+        let i_left = invader.position.x;
+        let i_right = i_left + SQUARE_SIZE;
+
+        
+        let b_left = bullet.position.x;
+        let b_right = b_left + SQUARE_SIZE;
+
+        if i_left == b_left {
+            return true;
+        }
+        
+        if i_left < b_left {
+            return i_right >= b_left;
+        }
+
+        if i_left > b_left {
+            return b_right >= i_left;
+        }
+        return false;
+    }
+
+    pub fn horizontal_crash(invader: &Invader, bullet: &Bullet) -> bool {
+        let invader_bottom = invader.position.y + SQUARE_SIZE;
+        let bullet_top = bullet.position.y;
+
+        return invader_bottom > bullet_top;
+    }
     
 }
 
@@ -210,11 +278,11 @@ async fn main() {
         clear_background(BLACK);
         game.draw();
 
-        if is_key_down(KeyCode::Left) {
+        if is_key_pressed(KeyCode::Left) {
             game.left();
         }
 
-        if is_key_down(KeyCode::Right) {
+        if is_key_pressed(KeyCode::Right) {
             game.right();
         }
 
