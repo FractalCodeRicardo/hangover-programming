@@ -1,7 +1,8 @@
 use macroquad::{prelude::*, rand::RandomRange};
-const DELAY: f64 = 1.;
-const CREATE_EVERY: usize= 5;
-const SPEED: f32 = 5.;
+
+const SPEED: f32 = 10.;
+const DELAY: f64 = 0.7;
+const ADD_TEXT_EVERY_MOV: usize = 2;
 
 struct Point {
     x: f32,
@@ -9,66 +10,64 @@ struct Point {
 }
 
 struct Text {
-    text: String,
     pos: Point,
+    text: String,
 }
 
 impl Text {
-    fn new(x: f32, y: f32, text: String) -> Self {
-        let pos = Point { x: x, y: y };
-
-        Text {
-            text: text,
-            pos: pos,
-        }
-    }
-
     fn random_color() -> Color {
         let r = RandomRange::gen_range(0., 1.);
         let g = RandomRange::gen_range(0., 1.);
         let b = RandomRange::gen_range(0., 1.);
-        return Color::new(r, g, b, 1.) ;
+
+        return Color::new(r, g, b, 1.);
     }
 
     fn draw(&self) {
         let color = Text::random_color();
-
-        // println!("drawing at {} {}", self.pos.x, self.pos.y);
-        draw_text(&self.text,
-            self.pos.x,
-            self.pos.y,
-            40.,
-            color
-        );
+        draw_text(&self.text, self.pos.x, self.pos.y, 40., color);
     }
 
     fn mov(&mut self) {
         self.pos = Point {
             x: self.pos.x,
-            y: self.pos.y + SPEED
+            y: self.pos.y + SPEED,
         }
     }
 }
 
 struct Game {
     texts: Vec<Text>,
-    last_created: usize
+    last_added: usize,
+    current_text: String,
 }
 
 impl Game {
-    fn new() -> Game {
-        Game { texts: Vec::new(), last_created: 0 }
+    fn new() -> Self {
+        Game {
+            texts: Vec::new(),
+            last_added: 0,
+            current_text: String::from(""),
+        }
     }
 
     fn add_text(&mut self) {
-        let width = screen_width();
+        let y = 100.;
+        let x = RandomRange::gen_range(0. + 100., (screen_width() / 2.) - 100.);
+        let pos = Point { x: x, y: y };
+        let word = Game::random_word();
 
-        let y = 30.;
-        let x = RandomRange::gen_range(100., width);
+        let text = Text {
+            pos: pos,
+            text: word,
+        };
 
-        let string = String::from("Hell0");
-        let text = Text::new(x, y, string);
         self.texts.push(text);
+    }
+
+    fn draw(&self) {
+        self.draw_texts();
+        self.draw_current_text();
     }
 
     fn draw_texts(&self) {
@@ -77,8 +76,40 @@ impl Game {
         }
     }
 
-    fn draw(&self) {
-        self.draw_texts();
+    fn draw_current_text(&self) {
+        draw_text(
+            &self.current_text,
+            screen_width() - 200.,
+            screen_height() - 50.,
+            50.,
+            WHITE,
+        );
+    }
+
+    fn add_character(&mut self, character: char) {
+        self.current_text.push(character);
+        let killed = self.kill_text();
+
+        if killed {
+            self.reset();
+        }
+    }
+
+    fn reset(&mut self) {
+        self.current_text = String::new();
+    }
+
+    fn kill_text(&mut self) -> bool {
+        for i in 0..self.texts.len() {
+            let text = &self.texts[i].text;
+
+            if text == &self.current_text {
+                self.texts.remove(i);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     fn mov_texts(&mut self) {
@@ -89,56 +120,45 @@ impl Game {
 
     fn mov(&mut self) {
         self.mov_texts();
-        self.last_created += 1;
+        self.last_added += 1;
 
-        if self.last_created >= CREATE_EVERY {
+        if self.last_added > ADD_TEXT_EVERY_MOV {
+            self.last_added = 0;
             self.add_text();
-            self.last_created = 0;
         }
     }
 
-    fn kill_text(&mut self, text: &str) -> bool {
-        for i in 0..self.texts.len() {
-            let t = &self.texts[i];
+    fn random_word() -> String {
+        let words: Vec<&str> = vec!["hello", "word", "hope", "god", "thisisfine"];
+        let index = RandomRange::gen_range(0, words.len());
 
-            if t.text == text {
-                self.texts.remove(i);
-                return true;
-            } 
-        }
-
-        return false;
+        return String::from(words[index]);
     }
-
 }
 
 #[macroquad::main("MyGame")]
 async fn main() {
-    let mut time = 0.;
     let mut game = Game::new();
-    let mut current_string = String::new();
+    let mut time = get_time();
 
     game.add_text();
     loop {
-
         clear_background(BLACK);
 
         game.draw();
 
-        let pressed = get_char_pressed();
+        let character = get_char_pressed();
+        if character.is_some() {
+            game.add_character(character.unwrap());
+        }
 
-        if pressed.is_some() {
-            current_string.push(pressed.unwrap());
-
-            println!("String {}", current_string);
-            if game.kill_text(&current_string) {
-                current_string = String::new();
-            }
+        if is_key_pressed(KeyCode::Escape) {
+            game.reset();
         }
 
         if get_time() - time > DELAY {
-            game.mov();
             time = get_time();
+            game.mov();
         }
 
         next_frame().await
