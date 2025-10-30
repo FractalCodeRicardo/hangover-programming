@@ -3,8 +3,12 @@ use macroquad::{prelude::*, rand::RandomRange};
 use std::{collections::HashMap, rc::Rc};
 
 mod models;
+mod image;
+mod audio;
+
 use models::GameObject;
-use models::ImageHandler;
+use image::ImageHandler;
+use audio::AudioHandler;
 use models::Position;
 use uuid::Uuid;
 
@@ -19,16 +23,21 @@ struct Domination {
     player: GameObject,
     bullets: Vec<GameObject>,
     image_handler: Rc<ImageHandler>,
+    audio_handler: Rc<AudioHandler>,
     last_enemy: usize,
     score: usize
 }
 
 impl Domination {
-    fn new(image_handler: Rc<ImageHandler>) -> Self {
+    fn new(
+        image_handler: Rc<ImageHandler>,
+        audio_handler: Rc<AudioHandler>
+    ) -> Self {
         Domination {
             enemies: Vec::new(),
             bullets: Vec::new(),
             player: Domination::create_player(&image_handler),
+            audio_handler: audio_handler,
             image_handler: image_handler,
             last_enemy: 0,
             score: 0
@@ -148,6 +157,7 @@ impl Domination {
 
     fn shot(&mut self) {
         self.add_bullet();
+        self.audio_handler.play_shoot();
     }
 
     fn is_crash(enemy: &GameObject, bullet: &GameObject) -> bool {
@@ -185,6 +195,10 @@ impl Domination {
                     bullets.push(b.id.clone());
                 }
             }
+        }
+
+        if enemies.len() > 0 {
+            self.audio_handler.play_explosion();
         }
 
         self.score += enemies.len();
@@ -237,7 +251,13 @@ async fn init_game() -> Domination {
     let mut images = ImageHandler::new();
     images.load_images().await;
 
-    let mut game = Domination::new(Rc::new(images));
+    let audio = AudioHandler::new().await;
+
+    let mut game = Domination::new(
+        Rc::new(images), 
+        Rc::new(audio)
+    );
+
     game.add_enemy();
 
     return game;
