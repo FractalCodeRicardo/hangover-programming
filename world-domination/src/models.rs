@@ -1,10 +1,8 @@
-const PLAYER_SIZE: f32 = 50.;
 
+use crate::constants::*;
 use std::{rc::Rc};
 
 use macroquad::{color::WHITE, math::Vec2, prelude::coroutines::tweens::linear, rand::RandomRange, texture::{draw_texture_ex, load_texture, DrawTextureParams, Texture2D}, window::{screen_height, screen_width}};
-
-
 
 pub struct Position {
     pub x: f32,

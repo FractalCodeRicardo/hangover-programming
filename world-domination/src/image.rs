@@ -1,12 +1,7 @@
+use crate::constants::*;
 use std::{collections::HashMap, rc::Rc};
-
 use macroquad::{color::WHITE, math::Vec2, rand::RandomRange, texture::{draw_texture_ex, load_texture, DrawTextureParams, Texture2D}, window::{screen_height, screen_width}};
 
-
-const PLAYER_IMAGE: &str = "player.png";
-const BULLET_IMAGE: &str = "bullet.png";
-const BG_IMAGE: &str = "background.png";
-const ENEMIES_IMAGES: &str = "enemy1.png,enemy2.png";
 
 pub struct ImageHandler {
     images: HashMap<String, Rc<Texture2D>>,

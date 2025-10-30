@@ -2,6 +2,7 @@ use macroquad::miniquad::native::linux_x11::libx11::EnterWindowMask;
 use macroquad::{prelude::*, rand::RandomRange};
 use std::{collections::HashMap, rc::Rc};
 
+mod constants;
 mod models;
 mod image;
 mod audio;
@@ -11,12 +12,7 @@ use image::ImageHandler;
 use audio::AudioHandler;
 use models::Position;
 use uuid::Uuid;
-
-const DELAY: f64 = 0.05;
-const ENEMY_EVERY: usize = 10;
-const ENEMY_STEP: f32 = 1.;
-const PLAYER_STEP: f32 = 5.;
-const BULLET_STEP: f32 = 5.;
+use constants::*;
 
 struct Domination {
     enemies: Vec<GameObject>,
@@ -161,7 +157,7 @@ impl Domination {
     }
 
     fn is_crash(enemy: &GameObject, bullet: &GameObject) -> bool {
-       let size = 50.;
+       let size = PLAYER_SIZE;
 
         if enemy.pos.y + size < bullet.pos.y {
             return false;
@@ -224,7 +220,7 @@ impl Domination {
 
     fn draw_score(&self) {
         let text = format!("Score: {}", self.score.to_string());
-        draw_text(&text, 0., screen_height() -50.,25., MAGENTA);
+        draw_text(&text, 0., screen_height() -50.,35., BLUE);
     }
 }
 
@@ -252,6 +248,7 @@ async fn init_game() -> Domination {
     images.load_images().await;
 
     let audio = AudioHandler::new().await;
+    audio.play_background();
 
     let mut game = Domination::new(
         Rc::new(images), 
