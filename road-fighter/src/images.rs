@@ -1,56 +1,52 @@
-use std::{cell::OnceCell, collections::HashMap, fs, rc::Rc};
+use std::rc::Rc;
 
 use macroquad::{rand::RandomRange, texture::{load_texture, Texture2D}};
 
-pub struct Images {
-    textures: HashMap<String, Rc<Texture2D>>,
-}
+ pub struct Images {
+     road: Rc<Texture2D>,
+     player: Rc<Texture2D>,
+     enemies: Vec<Rc<Texture2D>>
+ }
 
 impl Images {
 
     pub async fn new() -> Self {
-        let files = fs::read_dir("./assets/images").unwrap();
-        let mut textures: HashMap<String, Rc<Texture2D>> = HashMap::new();
+        let enemies_files = vec!["enemy1.png", "enemy2.png", "enemy3.png"];
+        let mut enemies: Vec<Rc<Texture2D>> =Vec::new();
 
-        for f in files {
-            let file_name = f
-                .unwrap()
-                .file_name()
-                .to_string_lossy()
-                .to_string();
-
-            let path = format!("{}{}", "./assets/images/", file_name);
-
-            let texture = load_texture(&path)
-                .await
-                .unwrap();
-
-            textures.insert(file_name, Rc::new(texture));
+        for ef in enemies_files {
+            let path = "./assets/images/".to_string() + ef;
+            let texture = load_texture(&path).await.unwrap();
+            enemies.push(Rc::new(texture));
         }
+
+        let road = load_texture("./assets/images/road.png")
+            .await
+            .unwrap();
+
+        let player = load_texture("./assets/images/red-car.png")
+            .await
+            .unwrap();
 
         Images {
-            textures: textures
+            road: Rc::new(road),
+            player: Rc::new(player),
+            enemies: enemies
         }
     }
 
-    pub fn get(&self, name: &str) -> &Texture2D {
-        return &self.textures[name];
+    pub fn get_road(&self) -> Rc<Texture2D> {
+        return self.road.clone();
     }
 
-    pub fn get_image_player(& self) -> Rc<Texture2D> {
-        return self.textures["red-car.png"].clone();
-    }
-    
-    pub fn get_image_road(& self) -> Rc<Texture2D> {
-        return self.textures["road.png"].clone();
+    pub fn get_player(&self) -> Rc<Texture2D> {
+        return self.player.clone();
     }
 
-    pub fn get_enemy_image(&self ) -> Rc<Texture2D> {
-        let images = vec!["enemy1.png", "enemy2.png", "enemy3.png"];
-        let index = RandomRange::gen_range(0, images.len());
-        let image_name = images[index];
-
-        return self.textures[image_name].clone();
+    pub fn get_enemy(&self) -> Rc<Texture2D>{
+        let index = RandomRange::gen_range(0, self.enemies.len());
+        let texture = &self.enemies[index];
+        return texture.clone();
     }
+
 }
-

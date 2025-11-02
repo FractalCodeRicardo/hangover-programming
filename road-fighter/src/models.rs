@@ -1,10 +1,14 @@
 use std::rc::Rc;
 
-use crate::{consts::*, images::Images};
-
 use macroquad::{
-    color::WHITE, math::Vec2, rand::RandomRange, texture::{draw_texture_ex, load_texture, DrawTextureParams, Texture2D}, window::{screen_height, screen_width}
+    color::WHITE,
+    math::Vec2,
+    rand::RandomRange,
+    texture::{DrawTextureParams, Texture2D, draw_texture_ex},
+    window::{screen_height, screen_width},
 };
+
+use crate::consts::{CAR_SIZE, ENEMY_SPEED, PLAYER_SPEED, ROAD_BORDE, ROAD_SIZE, ROAD_SPEED};
 
 pub struct Position {
     pub x: f32,
@@ -27,26 +31,24 @@ impl Road {
     }
 
     pub fn draw(&mut self) {
-        let size = Vec2::new(ROAD_WITDH, screen_height());
-        let center_x = screen_width() / 2.;
         draw_texture_ex(
             &self.image,
-            center_x - ROAD_WITDH / 2.,
+            screen_width() / 2. - ROAD_SIZE / 2.,
             self.y1,
             WHITE,
             DrawTextureParams {
-                dest_size: Some(size),
+                dest_size: Some(Vec2::new(ROAD_SIZE, screen_height())),
                 ..Default::default()
             },
         );
 
         draw_texture_ex(
             &self.image,
-            center_x - ROAD_WITDH / 2.,
+            screen_width() / 2. - ROAD_SIZE / 2.,
             self.y2,
             WHITE,
             DrawTextureParams {
-                dest_size: Some(size),
+                dest_size: Some(Vec2::new(ROAD_SIZE, screen_height())),
                 ..Default::default()
             },
         );
@@ -67,11 +69,10 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(image: Rc<Texture2D>) -> Player {
-
+    pub fn new(image: Rc<Texture2D>) -> Self {
         let pos = Position {
             x: screen_width() / 2.,
-            y: screen_height() - 100.,
+            y: screen_height() - 150.,
         };
 
         Player {
@@ -87,24 +88,24 @@ impl Player {
             self.pos.y,
             WHITE,
             DrawTextureParams {
-                dest_size: Some(Vec2::new(PLAYER_SIZE, PLAYER_SIZE)),
+                dest_size: Some(Vec2::new(CAR_SIZE, CAR_SIZE)),
                 ..Default::default()
             },
         );
     }
 
     pub fn left(&mut self) {
-       self.pos = Position {
-           x: self.pos.x - PLAYER_SIDE_SPEED,
-           y: self.pos.y
-       } 
+        self.pos = Position {
+            x: self.pos.x - PLAYER_SPEED,
+            y: self.pos.y,
+        }
     }
 
     pub fn right(&mut self) {
-       self.pos = Position {
-           x: self.pos.x + PLAYER_SIDE_SPEED,
-           y: self.pos.y
-       } 
+        self.pos = Position {
+            x: self.pos.x + PLAYER_SPEED,
+            y: self.pos.y,
+        }
     }
 
     pub fn top_left(&self) -> Position {
@@ -116,7 +117,7 @@ impl Player {
 
     pub fn top_right(&self) -> Position {
         Position {
-            x: self.pos.x + PLAYER_SIZE,
+            x: self.pos.x + CAR_SIZE,
             y: self.pos.y
         }
     }
@@ -124,25 +125,21 @@ impl Player {
 
 pub struct Enemy {
     image: Rc<Texture2D>,
-    pos: Position
+    pub pos: Position,
 }
 
 impl Enemy {
-
     pub fn new(image: Rc<Texture2D>) -> Self {
-        let limit_r = screen_width() - ROAD_BORDER - PLAYER_SIZE - 100.;
-        let limit_l = ROAD_BORDER + 100.;
         let pos = Position {
-            x: RandomRange::gen_range(limit_l, limit_r),
-            y: 0. 
+            x: RandomRange::gen_range(ROAD_BORDE, screen_width() - ROAD_BORDE - CAR_SIZE),
+            y: 10.,
         };
 
-         Enemy {
+        Enemy {
+            pos: pos,
             image: image,
-            pos: pos
         }
     }
-
 
     pub fn draw(&mut self) {
         draw_texture_ex(
@@ -151,22 +148,21 @@ impl Enemy {
             self.pos.y,
             WHITE,
             DrawTextureParams {
-                dest_size: Some(Vec2::new(PLAYER_SIZE, PLAYER_SIZE)),
+                dest_size: Some(Vec2::new(CAR_SIZE, CAR_SIZE)),
                 ..Default::default()
             },
         );
 
         self.pos = Position {
             x: self.pos.x,
-            y: self.pos.y + ENEMY_SPEED
+            y: self.pos.y + ENEMY_SPEED,
         }
     }
 
     pub fn overlaps(&self, pos: &Position) -> bool {
-        let horizontal_overlap = self.pos.x <= pos.x && pos.x <= self.pos.x + PLAYER_SIZE;
-        let vertical_overlap = self.pos.y <= pos.y && pos.y <= self.pos.y + PLAYER_SIZE;
+        let horizontal_overlap = self.pos.x <= pos.x && pos.x <= self.pos.x + CAR_SIZE;
+        let vertical_overlap = self.pos.y <= pos.y && pos.y <= self.pos.y + CAR_SIZE;
 
-        return horizontal_overlap && vertical_overlap;
+        return vertical_overlap && horizontal_overlap;
     }
 }
-

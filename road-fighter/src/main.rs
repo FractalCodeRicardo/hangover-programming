@@ -3,98 +3,76 @@ mod images;
 mod models;
 mod audio;
 
-use std::rc;
-use std::rc::Rc;
+use macroquad::prelude::*;
 
-use images::Images;
-use audio::Audio;
-use macroquad::color::BLACK;
-use macroquad::color::RED;
-use macroquad::input::KeyCode;
-use macroquad::input::is_key_down;
-use macroquad::input::is_key_pressed;
-use macroquad::text::draw_text;
-use macroquad::texture::Image;
-use macroquad::window::clear_background;
-use macroquad::window::next_frame;
-use macroquad::window::screen_height;
-use macroquad::window::screen_width;
-use models::Player;
-use models::Position;
-use models::Road;
-
-use crate::consts::ENEMY_EVERY;
-use crate::consts::PLAYER_SIZE;
-use crate::consts::ROAD_BORDER;
-use crate::models::Enemy;
+use crate::{audio::Audio, consts::{ADD_ENEMY_EVERY, CAR_SIZE, ROAD_BORDE}, images::Images, models::{Enemy, Player, Road}};
 
 struct Game {
     road: Road,
     player: Player,
     enemies: Vec<Enemy>,
-    last_enemy: usize,
     images: Images,
     audio: Audio,
-    game_over: bool
+    last_enemy: usize,
+    is_game_over: bool
 }
 
 impl Game {
+
     async fn new() -> Self {
         let images = Images::new().await;
-        let road_image = images.get_image_road();
-        let player_image = images.get_image_player();
-
-        let audio = Audio::new().await;
-        audio.play_engine();
-
         let mut game = Game {
-            road: Road::new(road_image),
-            player: Player::new(player_image),
+            road: Road::new(images.get_road()),
+            player: Player::new(images.get_player()),
             enemies: Vec::new(),
-            last_enemy: 0,
             images: images,
-            audio: audio,
-            game_over: false
+            last_enemy: 0,
+            is_game_over: false,
+            audio: Audio::new().await
         };
 
-        game.add_enemy().await;
+        game.add_enemy();
+        game.audio.play_background();
+
         return game;
     }
 
-    async fn add_enemy(&mut self) {
-        let image = self.images.get_enemy_image();
+    fn add_enemy(&mut self) {
+        let image = self.images.get_enemy();
         let enemy = Enemy::new(image);
+        
         self.enemies.push(enemy);
     }
 
-    async fn add_enemy_condition(&mut self) {
-        if self.last_enemy > ENEMY_EVERY {
-            self.add_enemy().await;
+    fn add_enemy_conditional(&mut self) {
+        if self.last_enemy > ADD_ENEMY_EVERY {
             self.last_enemy = 0;
-        }
-
-        self.last_enemy += 1;
-    }
-
-    async fn draw(&mut self) {
-        if self.game_over {
-            Game::show_game_over();
+            self.add_enemy();
             return;
         }
 
-        self.handle_road_crash();
-        self.handle_enemy_crash();
-
-        self.road.draw();
-        self.player.draw();
-        self.add_enemy_condition().await;
-        self.draw_enemies();
+        self.last_enemy += 1;
     }
 
     fn draw_enemies(&mut self) {
         for e in &mut self.enemies {
             e.draw();
         }
+
+    }
+
+    fn draw(&mut self) {
+        if self.is_game_over {
+            Game::show_game_over();
+            return;
+        }
+
+        self.handle_road_crash();
+        self.handle_car_crash();
+        self.add_enemy_conditional();
+        self.road.draw();
+        self.player.draw();
+        self.draw_enemies();
     }
 
     fn left(&mut self) {
@@ -106,82 +84,76 @@ impl Game {
     }
 
     fn is_road_crash(&self) -> bool {
-        println!("{} {} {}", self.player.pos.x, ROAD_BORDER, screen_width());
-        if self.player.pos.x <= ROAD_BORDER {
+
+        if self.player.pos.x <= ROAD_BORDE {
             return true;
         }
 
-        if self.player.pos.x + PLAYER_SIZE >= screen_width() - ROAD_BORDER {
+        if self.player.pos.x + CAR_SIZE >= screen_width() - ROAD_BORDE {
             return true;
         }
 
         return false;
     }
 
-    fn is_enemy_crash(&self) -> bool {
-        let p1 = self.player.top_left();
-        let p2 = self.player.top_right();
+    fn is_car_crash(&self) -> bool {
 
         for e in &self.enemies {
 
+            let p1 = self.player.top_left();
+            let p2 = self.player.top_right();
+
             if e.overlaps(&p1) {
-                return true
-            }
-            
-            if e.overlaps(&p2) {
-                return true
+                println!("P1 {} {} {} {}", e.pos.x, e.pos.y, p1.x, p1.y );
+                return true;
             }
 
+            if e.overlaps(&p2) {
+                println!("P2 {} {} {} {}", e.pos.x, e.pos.y, p1.x, p1.y );
+                return true;
+            }
         }
 
         return false;
+
     }
 
-    fn handle_enemy_crash(&mut self)  {
-        if self.is_enemy_crash() {
+
+    fn handle_car_crash(&mut self) {
+        if self.is_car_crash() {
             self.audio.play_explosion();
-           self.game_over = true;
+            self.is_game_over = true;
         }
     }
 
     fn handle_road_crash(&mut self) {
         if self.is_road_crash() {
             self.audio.play_explosion();
-            self.game_over = true;
+            self.is_game_over = true;
         }
     }
 
     fn show_game_over() {
-        draw_text(
-            "GAME OVER",
-            screen_width() / 2. - 50.,
-            screen_height() / 2.,
-            40.,
-            RED,
-        );
+        draw_text("GAME OVER", screen_width() / 2. - 100. ,screen_height() / 2. , 40., MAGENTA);
     }
+
 }
 
-#[macroquad::main("RoadFighter")]
+#[macroquad::main("MyGame")]
 async fn main() {
-    let mut game = init_game().await;
-
+    let mut game = Game::new().await;
     loop {
         clear_background(BLACK);
 
         events(&mut game);
-        game.draw().await;
+        game.draw();
 
-        next_frame().await;
+        next_frame().await
     }
 }
 
-async fn init_game() -> Game {
-    let game = Game::new().await;
-    return game;
-}
-
 fn events(game: &mut Game) {
+
     if is_key_down(KeyCode::L) {
         game.right();
     }
@@ -190,3 +162,4 @@ fn events(game: &mut Game) {
         game.left();
     }
 }
+      
