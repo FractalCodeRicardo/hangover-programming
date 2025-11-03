@@ -1,8 +1,9 @@
-use std::{collections::HashMap, rc::Rc, sync::RwLock};
+use std::rc::Rc;
 
-use macroquad::texture::{Texture2D, load_texture};
+use macroquad::texture::{load_texture, Texture2D};
+
 pub struct Images {
-    background: Rc<Texture2D>,
+    desert: Rc<Texture2D>,
     dinosaur1: Rc<Texture2D>,
     dinosaur2: Rc<Texture2D>,
     cactus: Rc<Texture2D>
@@ -11,7 +12,7 @@ pub struct Images {
 impl Images {
     pub async fn new() -> Self {
 
-        let background = load_texture("./assets/images/background.png")
+        let desert = load_texture("./assets/images/background.png")
             .await
             .unwrap();
 
@@ -19,7 +20,7 @@ impl Images {
             .await
             .unwrap();
 
-        let dinosaur2= load_texture("./assets/images/dinosaur2.png")
+        let dinosaur2 = load_texture("./assets/images/dinosaur2.png")
             .await
             .unwrap();
 
@@ -28,29 +29,27 @@ impl Images {
             .unwrap();
 
         Images {
-            background: Rc::new(background),
+            desert: Rc::new(desert),
             dinosaur1: Rc::new(dinosaur1),
             dinosaur2: Rc::new(dinosaur2),
             cactus: Rc::new(cactus)
         }
     }
 
-    pub fn get_background(&self) -> Rc<Texture2D> {
-        return self.background.clone();
-    }
-
-    pub fn get_dinosaurs(&self) -> Vec<Rc<Texture2D>> {
-        let mut images: Vec<Rc<Texture2D>> = Vec::new();
-        images.push(self.dinosaur1.clone());
-        images.push(self.dinosaur2.clone());
-        return images;
+    pub fn get_desert(&self) -> Rc<Texture2D> {
+        return self.desert.clone();
     }
 
     pub fn get_cactus(&self) -> Rc<Texture2D> {
         return self.cactus.clone();
     }
 
+    pub fn get_dinosaurs(&self) -> Vec<Rc<Texture2D>>{
+        let mut images: Vec<Rc<Texture2D>>= Vec::new();
+
+        images.push( self.dinosaur1.clone());
+        images.push( self.dinosaur2.clone());
+
+        return images;
+    }
 }
-
-
-
