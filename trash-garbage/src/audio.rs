@@ -1,8 +1,8 @@
 use macroquad::audio::{load_sound, play_sound, PlaySoundParams, Sound};
 
 pub struct Audio {
-    explosion: Sound,
-    shoot: Sound
+    shoot: Sound,
+    explosion: Sound
 }
 
 impl Audio {
@@ -17,19 +17,20 @@ impl Audio {
             .unwrap();
 
         Audio {
-            shoot: shoot,
-            explosion: explosion
+            shoot,
+            explosion
         }
     }
 
-    pub fn shoot(&self) {
+    pub fn play_shoot(&self) {
         play_sound(&self.shoot, PlaySoundParams {
             looped: false,
             volume: 0.7
         });
     }
 
-    pub fn explosion(&self) {
+
+    pub fn play_explosion(&self) {
         play_sound(&self.explosion, PlaySoundParams {
             looped: false,
             volume: 0.7

@@ -1,53 +1,56 @@
+mod consts;
 mod audio;
 mod components;
-mod consts;
 
 use macroquad::prelude::*;
 
-use crate::{audio::Audio, components::{Canion, Head, HeadImages, Landfill, TrashCan}};
+use crate::{audio::Audio, components::{Canion, Head, LandFill, TrashCan}};
 
 struct Game {
-    landfill: Landfill,
-    heads: Vec<Head>,
+    landfill: LandFill,
     canion: Canion,
-    head_images: HeadImages,
+    heads: Vec<Head>,
     trash: TrashCan,
-    audio: Audio,
-    score: usize
+    score: usize,
+    audio: Audio
 }
 
 impl Game {
     async fn new() -> Self {
-        let head_images = HeadImages::new().await;
-        let landfill = Landfill::new().await;
+        let landfill = LandFill::new().await;
         let canion = Canion::new().await;
+        let heads = Vec::new();
         let trash = TrashCan::new().await;
         let audio = Audio::new().await;
 
-        Game {
-            heads: Vec::new(),
-            head_images: head_images,
+        Game { 
+            landfill: landfill ,
             canion: canion,
-            landfill: landfill,
+            heads: heads,
             trash: trash,
-            audio: audio,
-            score: 0
+            score: 0,
+            audio: audio
         }
     }
 
     fn draw(&mut self) {
-        self.handle_crash();
         self.landfill.draw();
-        self.draw_heads();
         self.canion.draw();
+        self.draw_heads();
         self.trash.draw();
-        self.draw_score();
+        self.handle_crash();
+        self.draw_scores();
     }
 
     fn draw_heads(&mut self) {
         for h in &mut self.heads {
             h.draw();
         }
+    }
+
+    fn draw_scores(&self) {
+        let text = format!("SCORE: {}", self.score);
+        draw_text(&text, screen_width()/ 2. -100., 180., 80., YELLOW);
     }
 
     fn left(&mut self) {
@@ -58,27 +61,36 @@ impl Game {
         self.canion.right();
     }
 
-    fn shot(&mut self) {
-        let pos = self.canion.shot_position();
-        let force = self.canion.force();
-        println!("{} {}", pos.x, pos.y);
-        
-        let mut head = Head::new(self.head_images.get());
-        head.shot(&pos, &force);
+    async fn shoot(&mut self) {
+        let mut head = Head::new().await;
 
-        self.audio.shoot();
-
+        let pos = self.canion.shoot_position();
+        let force = self.canion.direction_force();
+        head.set_shoot(&pos, &force);
         self.heads.push(head);
+
+        self.audio.play_shoot();
     }
 
-    fn get_indexes_crash(&self) -> Vec<usize> {
-        let mut indexes: Vec<usize> = Vec::new();
+    fn handle_crash(&mut self) {
+        let crashes = self.get_crash_indexes();
 
+        if crashes.len() > 0 {
+            self.audio.play_explosion();
+            self.score += crashes.len();
+        }
+
+        self.remove_crashes(&crashes);
+    }
+
+    fn get_crash_indexes(&self) -> Vec<usize> {
+        let mut indexes: Vec<usize> = Vec::new();
         for i in 0..self.heads.len() {
             let head = &self.heads[i];
-            let point = head.bottom_center();
+            let point = head.get_bottom_center();
 
             if self.trash.overlaps(&point) {
+                println!("Overlap");
                 indexes.push(i);
             }
         }
@@ -86,58 +98,43 @@ impl Game {
         return indexes;
     }
 
-    fn handle_crash(&mut self) {
-        let to_remove = self.get_indexes_crash();
-
-        if to_remove.len() > 0 {
-            self.audio.explosion();
-            self.score += to_remove.len();
-        }
-
-        self.remove_heads(&to_remove);
-    }
-
-    fn remove_heads(&mut self, indexes: &Vec<usize>) {
-        let mut i = 0;
+    fn remove_crashes(&mut self, indexes: &Vec<usize>) {
+        let mut i: usize = 0;
         self.heads
             .retain(|_| {
                 let keep = !indexes.contains(&i);
                 i += 1;
                 keep
             });
-
-    }
-
-    fn draw_score(&self) {
-        let score = format!("SCORE: {}", self.score);
-        draw_text(&score, screen_width() / 2.-100.,  50., 80., YELLOW);
     }
 }
 
 #[macroquad::main("MyGame")]
 async fn main() {
     let mut game = Game::new().await;
-
     loop {
         clear_background(RED);
-
-        events(&mut game);
+        
+        events(&mut game).await;
         game.draw();
 
         next_frame().await
     }
 }
 
-fn events(game: &mut Game) {
-    if is_key_down(KeyCode::H) {
-        game.left();
-    }
+async fn events(game: &mut Game) {
 
     if is_key_down(KeyCode::L) {
         game.right();
     }
 
-    if is_key_pressed(KeyCode::Space) {
-        game.shot();
+
+    if is_key_down(KeyCode::H) {
+        game.left();
     }
+
+    if is_key_pressed(KeyCode::Space) {
+        game.shoot().await;
+    }
+
 }
