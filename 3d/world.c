@@ -1,10 +1,11 @@
 #include "raylib.h"
 #include <math.h>
 #include "raymath.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
   Camera3D camera;
-  float cameraAngle;
 } Game;
 
 Camera3D GetCamera() {
@@ -12,7 +13,7 @@ Camera3D GetCamera() {
   camera.position = (Vector3){0.0f, 4.0f, 4.0f};
   camera.target = (Vector3){0.0f, 4, 3};
   camera.up = (Vector3){0.0f, 1.0f, 0.0f};
-  camera.fovy = 10.0f;
+  camera.fovy = 60.0f;
   camera.projection = CAMERA_PERSPECTIVE;
 
   return camera;
@@ -21,7 +22,6 @@ Camera3D GetCamera() {
 Game GetGame() {
   Game game;
   game.camera = GetCamera();
-  game.cameraAngle = 0;
 
   return game;
 }
@@ -50,18 +50,17 @@ void MoveVector(Game *game, Vector3 v) {
 
 void Flip(Game *game, float size) {
 
-  float sensivity = 0.5f;
-  float angle = game -> cameraAngle;
-  float newAngle = angle + (size * sensivity);
-  float rads = newAngle * DEG2RAD;
+  printf("Flip %f", size); 
+  float sensivity = 0.005f;
+  float rads = size * sensivity;
 
   Vector3 target = game -> camera.target;
   Vector3 position = game -> camera.position;
 
   Vector3 direction = Vector3Subtract(target, position);
 
-  float newx = direction.x * cosf(rads) + direction.z * sinf(rads);
-  float newz = -1 * direction.x * sinf(0) + direction.z * cosf(rads);
+  float newx = direction.x * cosf(rads) - direction.z * sinf(rads);
+  float newz = direction.x * sinf(rads) + direction.z * cosf(rads);
   Vector3 rotated = (Vector3) {
     newx,
     direction.y,
@@ -69,7 +68,6 @@ void Flip(Game *game, float size) {
   };
 
   game -> camera.target = Vector3Add(position, rotated);
-  game -> cameraAngle = newAngle;
 
 }
 
@@ -100,12 +98,12 @@ void HandleKeys(Game *game) {
     return;
   }
 
-  if (IsKeyDown(KEY_A)) {
+  if (IsKeyDown(KEY_D)) {
     right(game);
     return;
   }
 
-  if (IsKeyDown(KEY_B)) {
+  if (IsKeyDown(KEY_A)) {
     left(game);
     return;
   }
