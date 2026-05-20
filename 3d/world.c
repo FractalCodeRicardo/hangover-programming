@@ -2,7 +2,6 @@
 #include <math.h>
 #include "raymath.h"
 #include <stdio.h>
-#include <stdlib.h>
 
 typedef struct {
   Camera3D camera;
@@ -48,43 +47,61 @@ void MoveVector(Game *game, Vector3 v) {
   };
 }
 
-void Flip(Game *game, float size) {
-
-  printf("Flip %f", size); 
-  float sensivity = 0.005f;
-  float rads = size * sensivity;
-
+Vector3 forwardDirection(Game *game) {
   Vector3 target = game -> camera.target;
   Vector3 position = game -> camera.position;
 
   Vector3 direction = Vector3Subtract(target, position);
 
-  float newx = direction.x * cosf(rads) - direction.z * sinf(rads);
-  float newz = direction.x * sinf(rads) + direction.z * cosf(rads);
-  Vector3 rotated = (Vector3) {
-    newx,
-    direction.y,
-    newz
-  };
+  return direction;
+}
+
+void flip(Game *game, float size) {
+  float sensivity = 0.005f;
+  float rads = size * sensivity;
+
+  Vector3 position = game -> camera.position;
+  Vector3 forward = forwardDirection(game);
+
+  Vector3 rotated = Vector3RotateByAxisAngle(
+      forward, 
+      (Vector3){0, 1, 0},
+      rads
+    );
 
   game -> camera.target = Vector3Add(position, rotated);
 
 }
 
 void up(Game *game) {
-  MoveVector(game, (Vector3){0,0,-0.1});
+  Vector3 forward = forwardDirection(game);
+  forward = Vector3Normalize(forward);
+  MoveVector(game, forward);
 }
 
 void down(Game *game) {
-  MoveVector(game, (Vector3){0,0,0.1});
+  Vector3 forward = forwardDirection(game);
+  Vector3 down = Vector3Normalize(forward);
+  down = Vector3Scale(down, -1);
+
+  MoveVector(game, down);
 }
 
 void right(Game *game) {
-  MoveVector(game, (Vector3){0.1,0,0});
+  Vector3 forward = forwardDirection(game);
+  Vector3 right = Vector3Normalize(forward);
+  right = Vector3Perpendicular(forward);
+
+  MoveVector(game, right);
 }
 
 void left(Game *game) {
-  MoveVector(game, (Vector3){-0.1,0,0});
+  Vector3 forward = forwardDirection(game);
+  Vector3 left = Vector3Normalize(forward);
+  left = Vector3Perpendicular(forward);
+  left = Vector3Scale(left, -1);
+
+  MoveVector(game, left);
 }
 
 void HandleKeys(Game *game) {
