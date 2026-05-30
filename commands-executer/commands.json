@@ -1,158 +1,218 @@
 [
   {
-    "name": "Create animal file with touch",
-    "commands": [
-      "touch zoo-project/animals/mammals/bear.txt"
-    ]
+    "name": "List files in current folder with ls",
+    "commands": ["ls"]
   },
   {
-    "name": "Create folder with mkdir",
-    "commands": [
-      "mkdir zoo-project/animals/amphibians"
-    ]
+    "name": "List files with details",
+    "commands": ["ls -la "]
   },
   {
-    "name": "Move into mammals folder",
-    "commands": [
-      "cd zoo-project/animals/mammals"
-    ]
+    "name": "Show current directory with pwd",
+    "commands": ["pwd"]
+  },
+  {
+    "name": "Move into mammals folder with cd",
+    "commands": ["cd mammals"]
   },
   {
     "name": "Move to parent folder",
+    "commands": ["cd .."]
+  },
+  {
+    "name": "Move to animals from home",
+    "commands": ["cd ~/animals"]
+  },
+  {
+    "name": "Move to previous directory with cd -",
+    "commands": ["cd mammals", "cd -"]
+  },
+  {
+    "name": "Create bear file with touch",
     "commands": [
-      "cd .."
+      "cd mammals/",
+      "touch bear.txt",
+      "ls"
     ]
   },
   {
-    "name": "Move to home directory",
+    "name": "Create fish folder with mkdir",
+    "commands": ["mkdir fish", "ls"]
+  },
+  {
+    "name": "Create nested folders with mkdir -p",
+    "commands": ["mkdir -p insects/beetles", "cd insects", "ls"]
+  },
+  {
+    "name": "Show tree structure",
+    "commands": ["tree ~/animals"]
+  },
+  {
+    "name": "Move lion-bird.txt file to birds with mv",
     "commands": [
-      "cd ~"
+      "touch mammals/lion-bird.txt",
+      "mv mammals/lion-bird.txt birds/lion-bird.txt",
+      "ls birds"
     ]
   },
   {
-    "name": "Move to previous directory",
+    "name": "Rename cat.txt file to dog.txt with mv ",
     "commands": [
-      "cd -"
+      "touch mammals/cat.txt",
+      "mv mammals/cat.txt mammals/dog.txt",
+      "ls mammals"]
+  },
+  {
+    "name": "Copy cat.txt file to cat-copy.txt with cp",
+    "commands": [
+      "touch mammals/cat.txt",
+      "cp mammals/cat.txt cat-copy.txt",
+      "ls"
     ]
   },
   {
-    "name": "Move shark file to reptiles",
+    "name": "Copy mammals folder recursively with cp",
+    "commands": ["cp -r mammals mammals-backup", "ls"]
+  },
+  {
+    "name": "Delete temp-animal.txt file with rm",
     "commands": [
-      "mv zoo-project/animals/ocean/shark.txt zoo-project/animals/reptiles/shark.txt"
+      "touch temp-animal.txt",
+      "rm temp-animal.txt"
     ]
   },
   {
-    "name": "Copy lion file",
+    "name": "Delete temp-folder folder with rm -r",
     "commands": [
-      "cp zoo-project/animals/mammals/lion.txt zoo-project/animals/mammals/lion-copy.txt"
+      "mkdir temp-folder",
+      "touch temp-folder/temp-file.txt",
+      "ls",
+      "rm -r temp-folder",
+      "ls"
     ]
   },
   {
-    "name": "Find lion file",
-    "commands": [
-      "find zoo-project -name \"lion.txt\""
-    ]
+    "name": "Display tiger file with cat",
+    "commands": ["cat mammals/tiger.txt"]
   },
   {
-    "name": "Find txt files",
-    "commands": [
-      "find zoo-project -name \"*.txt\""
-    ]
+    "name": "View tiger file with less",
+    "commands": ["less mammals/tiger.txt", "q"]
   },
   {
-    "name": "Find directories",
-    "commands": [
-      "find zoo-project -type d"
-    ]
+    "name": "Show first lines of tiger file with head",
+    "commands": ["head mammals/tiger.txt"]
   },
   {
-    "name": "Grep lion in lion file",
-    "commands": [
-      "grep Lion zoo-project/animals/mammals/lion.txt"
-    ]
+    "name": "Show last lines of tiger file with tail",
+    "commands": ["tail mammals/tiger.txt"]
   },
   {
-    "name": "Grep penguin in txt files",
-    "commands": [
-      "grep penguin zoo-project/**/*.txt"
-    ]
+    "name": "Find tiger.txt file with find",
+    "commands": ["find . -name \"tiger.txt\""]
   },
   {
-    "name": "Grep fish in animal files",
-    "commands": [
-      "grep fish zoo-project/animals/**/*.txt"
-    ]
+    "name": "Find all txt files with find",
+    "commands": ["find . -name \"*.txt\""]
   },
   {
-    "name": "Recursive grep shark",
-    "commands": [
-      "grep -r shark zoo-project"
-    ]
+    "name": "Find mammals directory with find",
+    "commands": ["find . -type d -name \"mammals\""]
   },
   {
-    "name": "Recursive grep with less",
-    "commands": [
-      "grep -r animal zoo-project | less"
-    ]
+    "name": "Find all directories with find",
+    "commands": ["find . -type d"]
   },
   {
-    "name": "Ripgrep lion in lion file",
-    "commands": [
-      "rg Lion zoo-project/animals/mammals/lion.txt"
-    ]
+    "name": "Find all files with find",
+    "commands": ["find . -type f"]
   },
   {
-    "name": "Ripgrep penguin in txt files",
-    "commands": [
-      "rg penguin zoo-project"
-    ]
+    "name": "Find files containing lion in name with find",
+    "commands": ["find . -name \"*lion*\""]
   },
   {
-    "name": "Ripgrep fish in animals",
-    "commands": [
-      "rg fish zoo-project/animals"
-    ]
+    "name": "Search Tiger in tiger file with grep",
+    "commands": ["grep Tiger mammals/tiger.txt"]
   },
   {
-    "name": "Recursive ripgrep reptile",
-    "commands": [
-      "rg reptile zoo-project"
-    ]
+    "name": "Search Name in all mammals files with grep",
+    "commands": ["grep 'Name' mammals/*.txt"]
   },
   {
-    "name": "Ripgrep with less",
-    "commands": [
-      "rg ocean zoo-project | less"
-    ]
+    "name": "Search Category in reptiles files with grep",
+    "commands": ["grep 'Category' reptiles/*.txt"]
   },
   {
-    "name": "FZF recursive",
-    "commands": [
-      "fzf"
-    ]
+    "name": "Search Tiger recursively grep",
+    "commands": ["grep -r Tiger ."]
   },
   {
-    "name": "Pipe ls into fzf",
-    "commands": [
-      "ls zoo-project/animals | fzf"
-    ]
+    "name": "Search Diet recursively with line numbers with grep",
+    "commands": ["grep -rn 'Diet' ."]
   },
   {
-    "name": "Find txt files with fzf",
-    "commands": [
-      "find zoo-project -name \"*.txt\" | fzf"
-    ]
+    "name": "Search Diet with ripgrep",
+    "commands": ["rg Diet"]
   },
   {
-    "name": "Open selected file in nvim",
-    "commands": [
-      "nvim $(find zoo-project -name \"*.txt\" | fzf)"
-    ]
+    "name": "Search content in mammals with ripgrep",
+    "commands": ["rg '' mammals"]
   },
   {
-    "name": "Open selected file in nano",
-    "commands": [
-      "nano $(find zoo-project -name \"*.txt\" | fzf)"
-    ]
+    "name": "Search Category with ripgrep and page output",
+    "commands": ["rg Category | less", "q"]
+  },
+  {
+    "name": "Fuzzy search mammals with fzf",
+    "commands": ["fzf", "mammals"]
+  },
+  {
+    "name": "Select animals starting with P  with fzf",
+    "commands": ["find . -type f -name 'p*' | fzf", "pen"]
+  },
+  {
+    "name": "Select txt file with fzf",
+    "commands": ["find . -name '*.txt' | fzf", "sna"]
+  },
+  {
+    "name": "Select file with fzf and open it in nvim",
+    "commands": ["nvim \"$(find . -type f | fzf)\"", "snake", ":q"]
+  },
+  {
+    "name": "Change directory using fzf",
+    "commands": ["cd \"$(find . -type d | fzf)\"", "bir"]
+  },
+  {
+    "name": "Show file type",
+    "commands": ["file mammals/tiger.txt"]
+  },
+  {
+    "name": "Show file statistics",
+    "commands": ["stat mammals/tiger.txt"]
+  },
+  {
+    "name": "Show animals folder size",
+    "commands": ["du -sh mammals"]
+  },
+  {
+    "name": "Select file and display contents with cat",
+    "commands": ["find . -type f | fzf | xargs cat", "tiger"]
+  },
+  {
+    "name": "Search Category with ripgrep and fuzzy search results with fzf",
+    "commands": ["rg Category | fzf", "tile"]
+  },
+  {
+    "name": "Count all files",
+    "commands": ["find . -type f | wc -l"]
+  },
+  {
+    "name": "Count mammal files",
+    "commands": ["find animals/mammals -type f | wc -l"]
+  },
+  {
+    "name": "Find all txt files in animals",
+    "commands": ["find . -name \"*.txt\""]
   }
 ]

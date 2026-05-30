@@ -1,6 +1,7 @@
 import json
 import time
 import subprocess
+import argparse
 
 
 def get_command(data):
@@ -22,7 +23,7 @@ def load_commands():
     for item in json_file:
         entry = get_command(item)
 
-        if (entry is None):
+        if entry is None:
             continue
 
         entries.append(entry)
@@ -31,19 +32,54 @@ def load_commands():
 
 
 def execute(entry):
+    subprocess.run('ydotool type "cd ~/animals\\n"', shell=True)
+    time.sleep(1)
+
+    subprocess.run('ydotool type "clear\\n"', shell=True)
+    time.sleep(1)
+
+    name = entry["name"]
+    name_command = f'ydotool type "echo \\"{name}\\"\\n"'
+    subprocess.run(name_command, shell=True)
+
     for cmd in entry["commands"]:
-        full_command = "ydotool type --key-delay 100 \"" + cmd + "\""
+        full_command = f'ydotool type "{cmd}\\n"'
+
         subprocess.run(full_command, shell=True)
-        time.sleep(0.5)
-        subprocess.run("ydotool key 28:1 28:0", shell=True)
+        time.sleep(2)
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-i",
+        "--index",
+        type=int,
+        help="Execute only the command at this index",
+    )
+    args = parser.parse_args()
+
     entries = load_commands()
+
+    if args.index is not None:
+        if args.index < 0 or args.index >= len(entries):
+            print(
+                f"Invalid index {args.index}. "
+                f"Valid range: 0-{len(entries)-1}"
+            )
+            return
+
+        entries = [entries[args.index]]
+
+    print("Focus the terminal in 5 seconds")
+    time.sleep(5)
+
+    subprocess.run('ydotool type "cd\\n"', shell=True)
 
     for entry in entries:
         print(f"\n=== {entry['name']} ===")
         execute(entry)
+        time.sleep(5)
 
 
 if __name__ == "__main__":
