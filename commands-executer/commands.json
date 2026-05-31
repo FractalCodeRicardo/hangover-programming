@@ -127,7 +127,7 @@
     "name": "Find all files with find",
     "commands": ["find . -type f"]
   },
-  {
+ {
     "name": "Find files containing lion in name with find",
     "commands": ["find . -name \"*lion*\""]
   },
@@ -137,11 +137,11 @@
   },
   {
     "name": "Search Name in all mammals files with grep",
-    "commands": ["grep 'Name' mammals/*.txt"]
+    "commands": ["grep Name mammals/*.txt"]
   },
   {
     "name": "Search Category in reptiles files with grep",
-    "commands": ["grep 'Category' reptiles/*.txt"]
+    "commands": ["grep Category reptiles/*.txt"]
   },
   {
     "name": "Search Tiger recursively grep",
@@ -149,7 +149,7 @@
   },
   {
     "name": "Search Diet recursively with line numbers with grep",
-    "commands": ["grep -rn 'Diet' ."]
+    "commands": ["grep -rn Diet ."]
   },
   {
     "name": "Search Diet with ripgrep",
@@ -157,7 +157,7 @@
   },
   {
     "name": "Search content in mammals with ripgrep",
-    "commands": ["rg '' mammals"]
+    "commands": ["rg \"\" mammals"]
   },
   {
     "name": "Search Category with ripgrep and page output",
@@ -169,19 +169,19 @@
   },
   {
     "name": "Select animals starting with P  with fzf",
-    "commands": ["find . -type f -name 'p*' | fzf", "pen"]
+    "commands": ["find . -type f -name \"p*\" | fzf", "pen"]
   },
   {
     "name": "Select txt file with fzf",
-    "commands": ["find . -name '*.txt' | fzf", "sna"]
+    "commands": ["find . -name \"*.txt\" | fzf", "sna"]
   },
-  {
+ {
     "name": "Select file with fzf and open it in nvim",
-    "commands": ["nvim \"$(find . -type f | fzf)\"", "snake", ":q"]
+    "commands": ["find . -type f | fzf | xargs nvim", "snake", ":q"]
   },
   {
     "name": "Change directory using fzf",
-    "commands": ["cd \"$(find . -type d | fzf)\"", "bir"]
+    "commands": ["cd $(find . -type d | fzf)", "bir"]
   },
   {
     "name": "Show file type",
@@ -209,10 +209,6 @@
   },
   {
     "name": "Count mammal files",
-    "commands": ["find animals/mammals -type f | wc -l"]
-  },
-  {
-    "name": "Find all txt files in animals",
-    "commands": ["find . -name \"*.txt\""]
+    "commands": ["find mammals -type f | wc -l"]
   }
 ]

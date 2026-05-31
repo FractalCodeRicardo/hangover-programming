@@ -43,7 +43,8 @@ def execute(entry):
     subprocess.run(name_command, shell=True)
 
     for cmd in entry["commands"]:
-        full_command = f'ydotool type "{cmd}\\n"'
+        full_command = f"ydotool type '{cmd}\\n'"
+        print(full_command)
 
         subprocess.run(full_command, shell=True)
         time.sleep(2)
@@ -76,10 +77,12 @@ def main():
 
     subprocess.run('ydotool type "cd\\n"', shell=True)
 
+    i = 1
     for entry in entries:
-        print(f"\n=== {entry['name']} ===")
+        print(f"\n {i}. {entry['name']} ")
         execute(entry)
         time.sleep(5)
+        i += 1
 
 
 if __name__ == "__main__":
