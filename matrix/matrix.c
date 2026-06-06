@@ -1,9 +1,8 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include "raylib.h"
 
-#define SIZE_WINDOW 1000
-#define SIZE 50
+#define SIZE_WINDOW 800
+#define SIZE 40
 
 typedef struct {
   int x;
