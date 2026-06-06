@@ -1,0 +1,214 @@
+[
+  {
+    "name": "List files in current folder with ls",
+    "commands": ["ls"]
+  },
+  {
+    "name": "List files with details",
+    "commands": ["ls -la "]
+  },
+  {
+    "name": "Show current directory with pwd",
+    "commands": ["pwd"]
+  },
+  {
+    "name": "Move into mammals folder with cd",
+    "commands": ["cd mammals"]
+  },
+  {
+    "name": "Move to parent folder",
+    "commands": ["cd .."]
+  },
+  {
+    "name": "Move to animals from home",
+    "commands": ["cd ~/animals"]
+  },
+  {
+    "name": "Move to previous directory with cd -",
+    "commands": ["cd mammals", "cd -"]
+  },
+  {
+    "name": "Create bear file with touch",
+    "commands": [
+      "cd mammals/",
+      "touch bear.txt",
+      "ls"
+    ]
+  },
+  {
+    "name": "Create fish folder with mkdir",
+    "commands": ["mkdir fish", "ls"]
+  },
+  {
+    "name": "Create nested folders with mkdir -p",
+    "commands": ["mkdir -p insects/beetles", "cd insects", "ls"]
+  },
+  {
+    "name": "Show tree structure",
+    "commands": ["tree ~/animals"]
+  },
+  {
+    "name": "Move lion-bird.txt file to birds with mv",
+    "commands": [
+      "touch mammals/lion-bird.txt",
+      "mv mammals/lion-bird.txt birds/lion-bird.txt",
+      "ls birds"
+    ]
+  },
+  {
+    "name": "Rename cat.txt file to dog.txt with mv ",
+    "commands": [
+      "touch mammals/cat.txt",
+      "mv mammals/cat.txt mammals/dog.txt",
+      "ls mammals"]
+  },
+  {
+    "name": "Copy cat.txt file to cat-copy.txt with cp",
+    "commands": [
+      "touch mammals/cat.txt",
+      "cp mammals/cat.txt cat-copy.txt",
+      "ls"
+    ]
+  },
+  {
+    "name": "Copy mammals folder recursively with cp",
+    "commands": ["cp -r mammals mammals-backup", "ls"]
+  },
+  {
+    "name": "Delete temp-animal.txt file with rm",
+    "commands": [
+      "touch temp-animal.txt",
+      "rm temp-animal.txt"
+    ]
+  },
+  {
+    "name": "Delete temp-folder folder with rm -r",
+    "commands": [
+      "mkdir temp-folder",
+      "touch temp-folder/temp-file.txt",
+      "ls",
+      "rm -r temp-folder",
+      "ls"
+    ]
+  },
+  {
+    "name": "Display tiger file with cat",
+    "commands": ["cat mammals/tiger.txt"]
+  },
+  {
+    "name": "View tiger file with less",
+    "commands": ["less mammals/tiger.txt", "q"]
+  },
+  {
+    "name": "Show first lines of tiger file with head",
+    "commands": ["head mammals/tiger.txt"]
+  },
+  {
+    "name": "Show last lines of tiger file with tail",
+    "commands": ["tail mammals/tiger.txt"]
+  },
+  {
+    "name": "Find tiger.txt file with find",
+    "commands": ["find . -name \"tiger.txt\""]
+  },
+  {
+    "name": "Find all txt files with find",
+    "commands": ["find . -name \"*.txt\""]
+  },
+  {
+    "name": "Find mammals directory with find",
+    "commands": ["find . -type d -name \"mammals\""]
+  },
+  {
+    "name": "Find all directories with find",
+    "commands": ["find . -type d"]
+  },
+  {
+    "name": "Find all files with find",
+    "commands": ["find . -type f"]
+  },
+ {
+    "name": "Find files containing lion in name with find",
+    "commands": ["find . -name \"*lion*\""]
+  },
+  {
+    "name": "Search Tiger in tiger file with grep",
+    "commands": ["grep Tiger mammals/tiger.txt"]
+  },
+  {
+    "name": "Search Name in all mammals files with grep",
+    "commands": ["grep Name mammals/*.txt"]
+  },
+  {
+    "name": "Search Category in reptiles files with grep",
+    "commands": ["grep Category reptiles/*.txt"]
+  },
+  {
+    "name": "Search Tiger recursively grep",
+    "commands": ["grep -r Tiger ."]
+  },
+  {
+    "name": "Search Diet recursively with line numbers with grep",
+    "commands": ["grep -rn Diet ."]
+  },
+  {
+    "name": "Search Diet with ripgrep",
+    "commands": ["rg Diet"]
+  },
+  {
+    "name": "Search content in mammals with ripgrep",
+    "commands": ["rg \"\" mammals"]
+  },
+  {
+    "name": "Search Category with ripgrep and page output",
+    "commands": ["rg Category | less", "q"]
+  },
+  {
+    "name": "Fuzzy search mammals with fzf",
+    "commands": ["fzf", "mammals"]
+  },
+  {
+    "name": "Select animals starting with P  with fzf",
+    "commands": ["find . -type f -name \"p*\" | fzf", "pen"]
+  },
+  {
+    "name": "Select txt file with fzf",
+    "commands": ["find . -name \"*.txt\" | fzf", "sna"]
+  },
+ {
+    "name": "Select file with fzf and open it in nvim",
+    "commands": ["find . -type f | fzf | xargs nvim", "snake", ":q"]
+  },
+  {
+    "name": "Change directory using fzf",
+    "commands": ["cd $(find . -type d | fzf)", "bir"]
+  },
+  {
+    "name": "Show file type",
+    "commands": ["file mammals/tiger.txt"]
+  },
+  {
+    "name": "Show file statistics",
+    "commands": ["stat mammals/tiger.txt"]
+  },
+  {
+    "name": "Show animals folder size",
+    "commands": ["du -sh mammals"]
+  },
+  {
+    "name": "Select file and display contents with cat",
+    "commands": ["find . -type f | fzf | xargs cat", "tiger"]
+  },
+  {
+    "name": "Search Category with ripgrep and fuzzy search results with fzf",
+    "commands": ["rg Category | fzf", "tile"]
+  },
+  {
+    "name": "Count all files",
+    "commands": ["find . -type f | wc -l"]
+  },
+  {
+    "name": "Count mammal files",
+    "commands": ["find mammals -type f | wc -l"]
+  }
+]

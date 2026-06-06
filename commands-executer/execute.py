@@ -43,7 +43,7 @@ def execute(entry):
     subprocess.run(name_command, shell=True)
 
     for cmd in entry["commands"]:
-        full_command = f"ydotool type '{cmd}\\n'"
+        full_command = f"ydotool type \"{cmd}\\n\""
         print(full_command)
 
         subprocess.run(full_command, shell=True)
