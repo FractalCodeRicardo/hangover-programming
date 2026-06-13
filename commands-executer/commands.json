@@ -1,219 +1,118 @@
 [
   {
-    "name": "Search Carnivore in all files",
-    "commands": ["rg Carnivore"]
+    "name": "Recursive search for Carnivore",
+    "commands": ["grep -R Carnivore ."]
   },
   {
-    "name": "Search Lion or Tiger with regex",
-    "commands": ["rg 'Lion|Tiger'"]
+    "name": "Show line numbers for Tiger",
+    "commands": ["grep -Rn Tiger ."]
   },
   {
-    "name": "Case-insensitive search for lion",
-    "commands": ["rg -i lion"]
+    "name": "Match lines starting with Diet",
+    "commands": ["grep '^Diet:' mammals/lion.txt"]
   },
   {
-    "name": "Show files containing Carnivore",
-    "commands": ["rg -l Carnivore"]
+    "name": "Match lines ending with years",
+    "commands": ["grep -R 'years$' ."]
   },
   {
-    "name": "Show files not containing Carnivore",
-    "commands": ["rg --files-without-match Carnivore"]
+    "name": "Search using extended regex",
+    "commands": ["grep -RE 'Lion|Tiger' ."]
   },
   {
-    "name": "Count Carnivore matches per file",
-    "commands": ["rg -c Carnivore"]
+    "name": "Find empty lines",
+    "commands": ["grep -Rn '^$' ."]
   },
   {
-    "name": "Count total Carnivore matches",
-    "commands": ["rg -o Carnivore | wc -l"]
+    "name": "Find lines with digits",
+    "commands": ["grep -RE '\\\\b[0-9]+\\\\b' ."]
   },
   {
-    "name": "Search Carnivore only in mammals",
-    "commands": ["rg Carnivore mammals"]
+    "name": "Count Carnivore matches",
+    "commands": ["grep -Rc Carnivore . "]
   },
   {
-    "name": "Search Omnivore only in birds",
-    "commands": ["rg Omnivore birds"]
+    "name": "Show only matching text",
+    "commands": ["grep -RhoE '.*[0-9]+' ."]
   },
   {
-    "name": "Find all Name fields",
-    "commands": ["rg '^Name:' "]
+    "name": "Find lines without numbers",
+    "commands": ["grep -Rv '[0-9]' ."]
   },
   {
-    "name": "Find habitats ending with Forest",
-    "commands": ["rg 'Forest$'"]
+    "name": "Count Habitat matches",
+    "commands": ["grep -R '^Habitat:' . | wc -l"]
   },
   {
-    "name": "Find numbers in files",
-    "commands": ["rg '\\\\\\\\d+' "]
+    "name": "Count diets",
+    "commands": ["grep -RhoE 'Carnivore|Herbivore|Omnivore' . | sort | uniq -c"]
   },
   {
-    "name": "Find lifespan ranges",
-    "commands": ["rg '\\\\\\\\d+-\\\\\\\\d+ years' "]
+    "name": "Find lines longer than 50 characters",
+    "commands": ["grep -RE '^.{50,}$' ."]
   },
   {
-    "name": "Match whole word Bird",
-    "commands": ["rg -w Bird "]
+    "name": "Show only file names",
+    "commands": ["grep -Rl Carnivore ."]
   },
   {
-    "name": "Show 2 lines after Tiger",
-    "commands": ["rg -A 2 Tiger "]
+    "name": "Find files containing both Lion and Carnivore using pipes",
+    "commands": ["grep -Rl Lion . | xargs grep -l Carnivore"]
   },
   {
-    "name": "Show 2 lines before Fact in lion file",
-    "commands": ["rg -B 2 'Fact:' mammals/lion.txt"]
+    "name": "Find lines ending with a period",
+    "commands": ["grep -R '\\\\.$' ."]
   },
   {
-    "name": "Show 2 lines around Weight",
-    "commands": ["rg -C 2 Weight "]
+    "name": "Find files with find and then search with grep",
+    "commands": ["find . -name '*.txt' | xargs grep Carnivore"]
   },
   {
-    "name": "Find files containing Herbivore",
-    "commands": ["rg -l Herbivore"]
+    "name": "Exclude birds directory",
+    "commands": ["grep -R --exclude-dir=birds Carnivore ."]
   },
   {
-    "name": "Search only txt files",
-    "commands": ["rg Carnivore -g '*.txt' "]
+    "name": "Exclude all markdown files",
+    "commands": ["grep -R --exclude='*.md' Carnivore ."]
   },
   {
-    "name": "Search only mammals txt files",
-    "commands": ["rg Carnivore -g 'mammals/*.txt' "]
+    "name": "Find lines ending in km/h",
+    "commands": ["grep -RE '[0-9]+ km/h$' ."]
   },
   {
-    "name": "Exclude reptiles directory",
-    "commands": ["rg Carnivore -g '!reptiles/*' "]
+    "name": "Find lines starting with an uppercase vowel",
+    "commands": ["grep -RE '^[AEIOU]' ."]
   },
   {
-    "name": "Search Omnivore without line numbers",
-    "commands": ["rg -N Omnivore"]
+    "name": "Find facts mentioning great",
+    "commands": ["grep -R '^Fact:.*great' ."]
   },
   {
-    "name": "Extract diet values",
-    "commands": ["rg -o 'Carnivore|Herbivore|Omnivore' "]
+    "name": "Highlight matches with color",
+    "commands": ["grep --color=always Carnivore mammals/lion.txt"]
   },
   {
-    "name": "Search hidden files too",
-    "commands": ["rg Carnivore --hidden"]
+    "name": "Show first 3 Carnivore matches",
+    "commands": ["grep -R Carnivore . | head -3"]
   },
   {
-    "name": "Search hidden and ignored files",
-    "commands": ["rg Carnivore -uu"]
+    "name": "Find files without fly word",
+    "commands": ["grep -RL '^fly' ."]
   },
   {
-    "name": "Search binary files as text",
-    "commands": ["rg -a Carnivore "]
+    "name": "Sort files with Nanem inside",
+    "commands": ["grep -R '^Name:' . | sort"]
   },
   {
-    "name": "Literal search for speed value",
-    "commands": ["rg -F 'Up to 80 km/h' "]
+    "name": "Unique habitat values",
+    "commands": ["grep -Rh '^Habitat:' . | sort -u"]
   },
   {
-    "name": "Invert match Mammal in lion file",
-    "commands": ["rg -v Mammal mammals/lion.txt"]
+    "name": "Search with grep, fuzzy search with fzf",
+    "commands": ["grep -R Carnivore . | fzf", "tiger"]
   },
   {
-    "name": "Show ripgrep statistics",
-    "commands": ["rg Carnivore --stats"]
-  },
-  {
-    "name": "Output matches as JSON",
-    "commands": ["rg Carnivore --json"]
-  },
-  {
-    "name": "Find all habitats",
-    "commands": ["rg '^Habitat:' "]
-  },
-  {
-    "name": "Find all birds",
-    "commands": ["rg '^Category: Bird' "]
-  },
-
-  {
-    "name": "Find all omnivores",
-    "commands": ["rg '^Diet: Omnivore' "]
-  },
-  {
-    "name": "Find long-lived animals",
-    "commands": ["rg '5[0-9]|[6-9][0-9]|100' "]
-  },
-  {
-    "name": "Find all facts",
-    "commands": ["rg '^Fact:' "]
-  },
-  {
-    "name": "Find swimming animals",
-    "commands": ["rg -i swim "]
-  },
-  {
-    "name": "Show Carnivore with context",
-    "commands": ["rg Carnivore  -C 1"]
-  },
-  {
-    "name": "Find omnivore birds",
-    "commands": ["rg '^Diet: Omnivore' birds"]
-  },
-  {
-    "name": "Show files containing Fact",
-    "commands": ["rg -l '^Fact:' "]
-  },
-  {
-    "name": "Count carnivores",
-    "commands": ["rg '^Diet: Carnivore' | wc -l"]
-  },
-  {
-    "name": "Fuzzy select ripgrep result",
-    "commands": ["rg Carnivore | fzf", "tiger"]
-  },
-  {
-    "name": "Search Category then fuzzy filter",
-    "commands": ["rg Category | fzf", "Bird"]
-  },
-  {
-    "name": "Select file with rg and open in nvim",
-    "commands": ["rg -l Carnivore | fzf | xargs nvim", "lion", ":q"]
-  },
-  {
-    "name": "Find files mentioning swimmers",
-    "commands": ["rg -l swimmer "]
-  },
-  {
-    "name": "List only matching text for habitats",
-    "commands": ["rg -o '(Savanna|Forest|Grassland)' "]
-  },
-  {
-    "name": "Search multiple diets",
-    "commands": ["rg 'Carnivore|Omnivore' "]
-  },
-  {
-    "name": "Search exact Category lines",
-    "commands": ["rg '^Category:' "]
-  },
-  {
-    "name": "Search all files and show filenames only",
-    "commands": ["rg -l . "]
-  },
-  {
-    "name": "Show first match only per file",
-    "commands": ["rg -m 1 Diet "]
-  },
-  {
-    "name": "Count files containing Carnivore",
-    "commands": ["rg -l Carnivore | wc -l"]
-  },
-  {
-    "name": "Search for years",
-    "commands": ["rg 'years' "]
-  },
-  {
-    "name": "Find animals with exceptional abilities",
-    "commands": ["rg 'Vision|Ability|Movement' "]
-  },
-  {
-    "name": "Search for shell protection",
-    "commands": ["rg shell "]
-  },
-  {
-    "name": "Search and page results",
-    "commands": ["rg Diet  | less", "q"]
+    "name": "Open matching file in nvim",
+    "commands": ["grep -Rl Tiger . | fzf | xargs nvim", "tiger", ":q"]
   }
-  ]
+]
