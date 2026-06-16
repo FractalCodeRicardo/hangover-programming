@@ -1,166 +1,159 @@
 #include "raylib.h"
 #include <math.h>
-#include <stdio.h>
 
-#define BUFFER 100000
-const double WINDOW_SIZE = 800;
-double BOUND = 1.5;
+#define BUFFER 50000
+
+const int WINDOW_SIZE = 800;
+double BOUND = 2;
 double STEP = 0.02;
 double Y_OFFSET = 0.0;
 double X_OFFSET = 0.0;
 
-typedef struct{
+typedef struct  {
   double x;
   double y;
-} p;
+} Point;
 
-typedef struct {
-   p values[BUFFER];
-   int size;
-} points;
+typedef struct  {
+  Point values[BUFFER];
+  int size;
+} Points;
 
-points pts;
+Points points;
 
-bool isMandelBrot(double x, double y) {
-  int max = 500;
+bool IsMandelbrot(double x, double y) {
+  int i = 0;
   double z = 0;
   double zi = 0;
-  int i = 0;
+  int max = 500;
 
-  while( i < max) {
+  while(i < max) {
 
+    // the formula is zn = zn-1 ^ 2 + c
+    // z ^ 2
+    
     double t = z;
 
-    // z ^ 2
     z = (z*z) - (zi * zi);
-    zi = 2  * t * zi;
+    zi = 2 * t * zi;
 
     // z ^ 2 + c
     z = z + x;
     zi = zi + y;
 
-    if (sqrt((z*z) + (zi*zi)) > BOUND) {
+    if (sqrt(z*z + zi*zi) > BOUND) {
       break;
     }
 
     i = i + 1;
   }
 
+
   return i < max;
 }
 
-points getPoints() {
-  points pts;
-  double s = STEP;
+Points GetPoints() {
+  Points points;
+
+
   int i = 0;
-  int limit = BUFFER;
-  for (double x = -BOUND; x <= BOUND; x = x +s) {
-    for (double y = -BOUND; y <= BOUND; y = y +s) {
-      
-      if (i >= limit) {
-        break;
+  for(double x = -BOUND; x < BOUND; x = x + STEP) {
+    for(double y = -BOUND; y < BOUND; y = y + STEP) {
+
+      if (i >= BUFFER) {
+        return points;
       }
 
-      if (!isMandelBrot(x, y)) {
-        pts.values[i] = (p) { X_OFFSET+ BOUND + x, Y_OFFSET+ BOUND + y};
+      if (!IsMandelbrot(x, y)) {
+
+        points.values[i] = (Point) {
+          .x = X_OFFSET + BOUND + x, 
+          .y = Y_OFFSET + BOUND + y
+        };
+
         i = i + 1;
-        pts.size = i;
-      }
 
+        points.size = i;
+      }
+      
     }
   }
 
-  printf("Points %i step %f \n", pts.size, STEP);
 
-  return pts;
+  return points;
 }
 
-void drawPoints(points *pts) {
-  double size = WINDOW_SIZE / (BOUND * 2); 
-  double cell_size = size * STEP;
+void DrawPoints() {
+  double size = WINDOW_SIZE / (BOUND * 2);
+  double cell_size = STEP * size;
 
-  
+  for(int i = 0; i < points.size ; i++) {
+    Point p = points.values[i];
 
-  for(int i = 0; i < pts->size; i++) {
-    p p = pts->values[i];
+    int x = size * p.x;
+    int y = size * p.y;
 
-    //printf("Point: %f %f \n", p.x, p.y);
-    int x = p.x* size;
-    int y = p.y* size;
-
-    //printf("P %f %i, %f %i  Size  %f \n", p.x, x, p.y, y, size);
-    DrawRectangle(x, y, cell_size, cell_size, WHITE);
+    DrawRectangle(x, y, cell_size, cell_size, WHITE );
   }
 }
 
 void HandleKeys() {
 
-  if (IsKeyPressed(KEY_H)) {
-    STEP = STEP - 0.001;
-    pts = getPoints();
-  }
-
-  if (IsKeyPressed(KEY_J)) {
-    STEP = STEP + 0.001;
-    pts = getPoints();
-  }
-
-  if (IsKeyPressed(KEY_K)) {
-    BOUND = BOUND - 0.1;
-    pts = getPoints();
-  }
-
-  if (IsKeyPressed(KEY_L)) {
-    BOUND = BOUND + 0.1;
-    pts = getPoints();
-  }
-
-
   if (IsKeyPressed(KEY_UP)) {
     Y_OFFSET = Y_OFFSET - 0.1;
-    pts = getPoints();
+    points = GetPoints();
   }
 
   if (IsKeyPressed(KEY_DOWN)) {
     Y_OFFSET = Y_OFFSET + 0.1;
-    pts = getPoints();
+    points = GetPoints();
   }
 
   if (IsKeyPressed(KEY_RIGHT)) {
-    X_OFFSET = X_OFFSET + 0.1;
-    pts = getPoints();
+    X_OFFSET = X_OFFSET  +0.1;
+    points = GetPoints();
   }
 
   if (IsKeyPressed(KEY_LEFT)) {
     X_OFFSET = X_OFFSET - 0.1;
-    pts = getPoints();
+    points = GetPoints();
+  }
+
+  if (IsKeyPressed(KEY_H)) {
+    STEP = STEP - 0.001;
+    points = GetPoints();
+  }
+
+  if (IsKeyPressed(KEY_J)) {
+    STEP = STEP + 0.001;
+    points = GetPoints();
   }
 
 
+  if (IsKeyPressed(KEY_K)) {
+    BOUND = BOUND - 0.1;
+    points = GetPoints();
+  }
 
-
+  if (IsKeyPressed(KEY_L)) {
+    BOUND = BOUND + 0.1;
+    points = GetPoints();
+  }
 }
 
-void mandelbrot() {
-  
-  pts = getPoints();
-  printf("No puntos %i", pts.size); 
-  InitWindow(WINDOW_SIZE, WINDOW_SIZE, "Mandelbrot");
 
+int main() {
+  
+  points = GetPoints();
+  InitWindow(WINDOW_SIZE, WINDOW_SIZE, "Mandelbrot");
 
   while(!WindowShouldClose()) {
     BeginDrawing();
-    ClearBackground(BLACK);
     HandleKeys();
-    drawPoints(&pts);
+    ClearBackground(BLACK);
+    DrawPoints();
     EndDrawing();
   }
 
   CloseWindow();
 }
-
-int main() { 
-  mandelbrot();
-}
-
-
