@@ -1,118 +1,150 @@
 [
   {
-    "name": "Recursive search for Carnivore",
-    "commands": ["grep -R Carnivore ."]
+    "name": "Find file named lion.txt",
+    "commands": ["fd lion.txt"]
   },
   {
-    "name": "Show line numbers for Tiger",
-    "commands": ["grep -Rn Tiger ."]
+    "name": "Find files containing lion in name",
+    "commands": ["fd lion"]
   },
   {
-    "name": "Match lines starting with Diet",
-    "commands": ["grep '^Diet:' mammals/lion.txt"]
+    "name": "Case-sensitive search for Tiger",
+    "commands": ["fd -s Tiger"]
   },
   {
-    "name": "Match lines ending with years",
-    "commands": ["grep -R 'years$' ."]
+    "name": "Find files matching regex",
+    "commands": ["fd 'lion|tiger'"]
   },
   {
-    "name": "Search using extended regex",
-    "commands": ["grep -RE 'Lion|Tiger' ."]
+    "name": "Find all txt files",
+    "commands": ["fd -e txt"]
   },
   {
-    "name": "Find empty lines",
-    "commands": ["grep -Rn '^$' ."]
+    "name": "Find all json files",
+    "commands": ["fd -e json"]
   },
   {
-    "name": "Find lines with digits",
-    "commands": ["grep -RE '\\\\b[0-9]+\\\\b' ."]
+    "name": "Find all markdown files",
+    "commands": ["fd -e md"]
   },
   {
-    "name": "Count Carnivore matches",
-    "commands": ["grep -Rc Carnivore . "]
+    "name": "Find files ending with xt",
+    "commands": ["fd 'xt$'"]
   },
   {
-    "name": "Show only matching text",
-    "commands": ["grep -RhoE '.*[0-9]+' ."]
+    "name": "Find files starting with e",
+    "commands": ["fd '^e'"]
   },
   {
-    "name": "Find lines without numbers",
-    "commands": ["grep -Rv '[0-9]' ."]
+    "name": "Find only directories",
+    "commands": ["fd -t d"]
   },
   {
-    "name": "Count Habitat matches",
-    "commands": ["grep -R '^Habitat:' . | wc -l"]
+    "name": "Find only files",
+    "commands": ["fd -t f"]
   },
   {
-    "name": "Count diets",
-    "commands": ["grep -RhoE 'Carnivore|Herbivore|Omnivore' . | sort | uniq -c"]
+    "name": "Search inside mammals directory",
+    "commands": ["fd . mammals"]
   },
   {
-    "name": "Find lines longer than 50 characters",
-    "commands": ["grep -RE '^.{50,}$' ."]
+    "name": "Include hidden files",
+    "commands": ["fd -H"]
   },
   {
-    "name": "Show only file names",
-    "commands": ["grep -Rl Carnivore ."]
+    "name": "Search everything that contains r",
+    "commands": ["fd -u r"]
   },
   {
-    "name": "Find files containing both Lion and Carnivore using pipes",
-    "commands": ["grep -Rl Lion . | xargs grep -l Carnivore"]
+    "name": "Exclude reptiles directory",
+    "commands": ["fd --exclude reptiles"]
   },
   {
-    "name": "Find lines ending with a period",
-    "commands": ["grep -R '\\\\.$' ."]
+    "name": "Show absolute paths",
+    "commands": ["fd -a lion"]
   },
   {
-    "name": "Find files with find and then search with grep",
-    "commands": ["find . -name '*.txt' | xargs grep Carnivore"]
+    "name": "Delete all tmp files",
+    "commands": ["touch temp-file.tmp", "fd -e tmp -X rm", "ls"]
   },
   {
-    "name": "Exclude birds directory",
-    "commands": ["grep -R --exclude-dir=birds Carnivore ."]
+    "name": "Count txt files",
+    "commands": ["fd -e txt | wc -l"]
   },
   {
-    "name": "Exclude all markdown files",
-    "commands": ["grep -R --exclude='*.md' Carnivore ."]
+    "name": "Open selected file with fzf",
+    "commands": ["fd | fzf"]
   },
   {
-    "name": "Find lines ending in km/h",
-    "commands": ["grep -RE '[0-9]+ km/h$' ."]
+    "name": "Open selected file in nvim",
+    "commands": ["fd | fzf | xargs nvim", "lion.txt", ":q"]
   },
   {
-    "name": "Find lines starting with an uppercase vowel",
-    "commands": ["grep -RE '^[AEIOU]' ."]
+    "name": "Find files and show details",
+    "commands": ["fd lion -x stat"]
   },
   {
-    "name": "Find facts mentioning great",
-    "commands": ["grep -R '^Fact:.*great' ."]
+    "name": "Find files with numbers in name",
+    "commands": ["fd '[0-9]'"]
   },
   {
-    "name": "Highlight matches with color",
-    "commands": ["grep --color=always Carnivore mammals/lion.txt"]
+    "name": "Count directories",
+    "commands": ["fd -t d | wc -l"]
   },
   {
-    "name": "Show first 3 Carnivore matches",
-    "commands": ["grep -R Carnivore . | head -3"]
+    "name": "Count files",
+    "commands": ["fd -t f | wc -l"]
   },
   {
-    "name": "Find files without fly word",
-    "commands": ["grep -RL '^fly' ."]
+    "name": "Find files larger than 100 bytes",
+    "commands": ["find . -type f -size +100c"]
   },
   {
-    "name": "Sort files with Nanem inside",
-    "commands": ["grep -R '^Name:' . | sort"]
+    "name": "Find files smaller than 1 KB",
+    "commands": ["find . -type f -size -1k"]
   },
   {
-    "name": "Unique habitat values",
-    "commands": ["grep -Rh '^Habitat:' . | sort -u"]
+    "name": "Find empty files",
+    "commands": ["find . -type f -empty"]
   },
   {
-    "name": "Search with grep, fuzzy search with fzf",
-    "commands": ["grep -R Carnivore . | fzf", "tiger"]
+    "name": "Find empty directories",
+    "commands": ["find . -type d -empty"]
   },
   {
-    "name": "Open matching file in nvim",
-    "commands": ["grep -Rl Tiger . | fzf | xargs nvim", "tiger", ":q"]
+    "name": "Find files modified today",
+    "commands": ["find . -mtime -1"]
+  },
+  {
+    "name": "Find files older than 5 days",
+    "commands": ["find . -mtime +5"]
+  },
+  {
+    "name": "Find files accessed today",
+    "commands": ["find . -atime -1"]
+  },
+  {
+    "name": "Find files owned by current user",
+    "commands": ["find . -user $USER"]
+  },
+  {
+    "name": "Delete empty directories",
+    "commands": ["find . -type d -empty -delete"]
+  },
+  {
+    "name": "Find largest files",
+    "commands": ["find . -type f -exec du -h {} + | sort -hr | head"]
+  },
+  {
+    "name": "Find files not matching pattern",
+    "commands": ["find . -type f ! -name '*.txt'"]
+  },
+  {
+    "name": "Find files with spaces in name",
+    "commands": ["find . -name '* *'"]
+  },
+  {
+    "name": "Find files and page results",
+    "commands": ["fd | less", "q"]
   }
 ]

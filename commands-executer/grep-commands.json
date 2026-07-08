@@ -1,0 +1,118 @@
+[
+  {
+    "name": "Recursive search for Carnivore",
+    "commands": ["grep -R Carnivore ."]
+  },
+  {
+    "name": "Show line numbers for Tiger",
+    "commands": ["grep -Rn Tiger ."]
+  },
+  {
+    "name": "Match lines starting with Diet",
+    "commands": ["grep '^Diet:' mammals/lion.txt"]
+  },
+  {
+    "name": "Match lines ending with years",
+    "commands": ["grep -R 'years$' ."]
+  },
+  {
+    "name": "Search using extended regex",
+    "commands": ["grep -RE 'Lion|Tiger' ."]
+  },
+  {
+    "name": "Find empty lines",
+    "commands": ["grep -Rn '^$' ."]
+  },
+  {
+    "name": "Find lines with digits",
+    "commands": ["grep -RE '\\\\b[0-9]+\\\\b' ."]
+  },
+  {
+    "name": "Count Carnivore matches",
+    "commands": ["grep -Rc Carnivore . "]
+  },
+  {
+    "name": "Show only matching text",
+    "commands": ["grep -RhoE '.*[0-9]+' ."]
+  },
+  {
+    "name": "Find lines without numbers",
+    "commands": ["grep -Rv '[0-9]' ."]
+  },
+  {
+    "name": "Count Habitat matches",
+    "commands": ["grep -R '^Habitat:' . | wc -l"]
+  },
+  {
+    "name": "Count diets",
+    "commands": ["grep -RhoE 'Carnivore|Herbivore|Omnivore' . | sort | uniq -c"]
+  },
+  {
+    "name": "Find lines longer than 50 characters",
+    "commands": ["grep -RE '^.{50,}$' ."]
+  },
+  {
+    "name": "Show only file names",
+    "commands": ["grep -Rl Carnivore ."]
+  },
+  {
+    "name": "Find files containing both Lion and Carnivore using pipes",
+    "commands": ["grep -Rl Lion . | xargs grep -l Carnivore"]
+  },
+  {
+    "name": "Find lines ending with a period",
+    "commands": ["grep -R '\\\\.$' ."]
+  },
+  {
+    "name": "Find files with find and then search with grep",
+    "commands": ["find . -name '*.txt' | xargs grep Carnivore"]
+  },
+  {
+    "name": "Exclude birds directory",
+    "commands": ["grep -R --exclude-dir=birds Carnivore ."]
+  },
+  {
+    "name": "Exclude all markdown files",
+    "commands": ["grep -R --exclude='*.md' Carnivore ."]
+  },
+  {
+    "name": "Find lines ending in km/h",
+    "commands": ["grep -RE '[0-9]+ km/h$' ."]
+  },
+  {
+    "name": "Find lines starting with an uppercase vowel",
+    "commands": ["grep -RE '^[AEIOU]' ."]
+  },
+  {
+    "name": "Find facts mentioning great",
+    "commands": ["grep -R '^Fact:.*great' ."]
+  },
+  {
+    "name": "Highlight matches with color",
+    "commands": ["grep --color=always Carnivore mammals/lion.txt"]
+  },
+  {
+    "name": "Show first 3 Carnivore matches",
+    "commands": ["grep -R Carnivore . | head -3"]
+  },
+  {
+    "name": "Find files without fly word",
+    "commands": ["grep -RL '^fly' ."]
+  },
+  {
+    "name": "Sort files with Nanem inside",
+    "commands": ["grep -R '^Name:' . | sort"]
+  },
+  {
+    "name": "Unique habitat values",
+    "commands": ["grep -Rh '^Habitat:' . | sort -u"]
+  },
+  {
+    "name": "Search with grep, fuzzy search with fzf",
+    "commands": ["grep -R Carnivore . | fzf", "tiger"]
+  },
+  {
+    "name": "Open matching file in nvim",
+    "commands": ["grep -Rl Tiger . | fzf | xargs nvim", "tiger", ":q"]
+  }
+]
