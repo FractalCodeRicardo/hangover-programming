@@ -1,2 +1,2 @@
-gcc raymarch.c -o raymarch -lraylib
+gcc raymarch.c -o raymarch -lraylib 
 ./raymarch
