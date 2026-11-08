@@ -3,16 +3,27 @@
 #define SIZE 800
 
 float zoom = 0.0;
+float angle = 0.0;
+
 void HandleKeys() {
 
   if (IsKeyDown(KEY_UP)) {
-    zoom = zoom - 0.01;
+    zoom = zoom - 0.03;
   }
 
   if (IsKeyDown(KEY_DOWN)) {
-    zoom = zoom + 0.01;
+    zoom = zoom + 0.03;
+  }
+
+  if (IsKeyDown(KEY_RIGHT)) {
+    angle = angle + 0.03;
+  }
+
+  if (IsKeyDown(KEY_LEFT)) {
+    angle = angle - 0.03;
   }
 }
+
 int main() {
 
   InitWindow(SIZE, SIZE, "Mandelbulb");
@@ -20,6 +31,8 @@ int main() {
   Shader shader = LoadShader(0, "mandelbulb.glsl");
   int sizeLoc = GetShaderLocation(shader, "screenSize");
   int zoomLoc = GetShaderLocation(shader, "zoom");
+  int angleLoc = GetShaderLocation(shader, "angle");
+
   float screenSize = SIZE;
 
   SetShaderValue(
@@ -34,6 +47,11 @@ int main() {
     SetShaderValue(
         shader, zoomLoc, 
         &zoom, SHADER_UNIFORM_FLOAT
+    );
+
+    SetShaderValue(
+        shader, angleLoc, 
+        &angle, SHADER_UNIFORM_FLOAT
     );
 
     BeginDrawing();
