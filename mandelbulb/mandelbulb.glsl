@@ -4,6 +4,7 @@ out vec4 color;
 uniform float screenSize;
 uniform float zoom;
 uniform float angle;
+
 vec3 rotateY(vec3 p, float angle) {
   float c = cos(angle);
   float s = sin(angle);
@@ -14,6 +15,7 @@ vec3 rotateY(vec3 p, float angle) {
     s * p.x + c * p.z
   );
 }
+
 float distance(vec3 p) {
   p = rotateY(p, angle);
   int max_iter = 16;
@@ -71,7 +73,7 @@ vec3 march(vec3 origin, vec3 dir) {
   return ray;
 }
 
-vec3 getNormal(vec3 p) {
+vec3 gradient(vec3 p) {
   float e = 0.001;
 
   vec3 n = vec3(
@@ -87,33 +89,18 @@ void main() {
   vec2 uv = gl_FragCoord.xy / screenSize;
   uv = -1 + 2.0 * uv;
 
-  // float radius = -2.5 + zoom;
-
-  // float x = radius * sin(angle);
-  // float z = radius * cos(angle);
-
   vec3 camera = vec3(0, 0, 2.5 + zoom);
   vec3 target = vec3(uv, 1.5);
+
   vec3 dir = target - camera;
 
   dir = normalize(dir);
 
   vec3 p = march(camera, dir);
+  vec3 dp = gradient(p);
 
-  if (length(p) > 2.0) {
-    color = vec4(0, 0, 0, 1);
-    return;
-  }
-
-  vec3 normal = getNormal(p);
-
-  vec3 lightDir = normalize(vec3(-1.0, 1.0, 1.0));
-
-  // float diffuse = max(dot(normal, lightDir), 0.0);
-
-  // float brightness = 0.15 + diffuse * 0.85;
-
-  float diffuse = max(dot(normal, lightDir), 0.0);
+  vec3 light = normalize(vec3(-1.0, 1.0, 1.0));
+  float diffuse = max(dot(dp, light), 0.0);
   float brightness = 0.08 + diffuse * 0.92;
 
   color = vec4(vec3(brightness), 1.0);
