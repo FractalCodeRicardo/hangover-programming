@@ -4,6 +4,7 @@ out vec4 color;
 uniform float screenSize;
 uniform float zoom;
 uniform float angle;
+uniform float time;
 
 vec3 rotateY(vec3 p, float angle) {
   float c = cos(angle);
@@ -23,7 +24,7 @@ float distance(vec3 p) {
   float radius = 0.0;
   vec3 zn = vec3(p);
   float d = 1.0;
-  float power = 8.0;
+  float power = abs(sin(time * 0.1)) * 8;
 
   while (i < max_iter) {
     radius = length(zn);
@@ -52,7 +53,7 @@ float distance(vec3 p) {
 }
 
 vec3 march(vec3 origin, vec3 dir) {
-  int max_iter = 100;
+  int max_iter = 30;
   int i = 0;
   float depth = 0.0;
   vec3 ray;

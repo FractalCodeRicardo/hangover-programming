@@ -4,23 +4,24 @@
 
 float zoom = 0.0;
 float angle = 0.0;
+float time = 0.0;
 
 void HandleKeys() {
 
   if (IsKeyDown(KEY_UP)) {
-    zoom = zoom - 0.03;
+    zoom = zoom - 0.005;
   }
 
   if (IsKeyDown(KEY_DOWN)) {
-    zoom = zoom + 0.03;
+    zoom = zoom + 0.005;
   }
 
   if (IsKeyDown(KEY_RIGHT)) {
-    angle = angle + 0.03;
+    angle = angle + 0.005;
   }
 
   if (IsKeyDown(KEY_LEFT)) {
-    angle = angle - 0.03;
+    angle = angle - 0.005;
   }
 }
 
@@ -32,6 +33,7 @@ int main() {
   int sizeLoc = GetShaderLocation(shader, "screenSize");
   int zoomLoc = GetShaderLocation(shader, "zoom");
   int angleLoc = GetShaderLocation(shader, "angle");
+  int timeLoc = GetShaderLocation(shader, "time");
 
   float screenSize = SIZE;
 
@@ -43,6 +45,13 @@ int main() {
   while(!WindowShouldClose()) {
     
     HandleKeys();
+
+    time = GetTime();
+
+    SetShaderValue(
+        shader, timeLoc, 
+        &time, SHADER_UNIFORM_FLOAT
+    );
 
     SetShaderValue(
         shader, zoomLoc, 
